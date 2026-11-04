@@ -1,0 +1,46 @@
+# Rotely
+
+> Bar inventory and ordering for independent bars, by text and web. Rotely fills in the bar's count shelf by shelf from invoices and sales, so the staff only fix what's different; checks every invoice price against the bar's other suppliers; and drafts orders the owner approves before anything is sent. Holiday deal: $99 a month (regular $149) or $999 a year per bar plus tax, for bars that sign up by Dec 31, 2026, paid monthly or yearly, free until the first full count, up to two weeks.
+
+## A real result
+- At its first bar, a Texas bar that buys from several suppliers, Rotely can save about $15,790 a year in money and time. From the bar's own invoices: $1,860 a year paid above its cheaper supplier and $340 a year in price rises found. Estimates: about $6,240 a year less over-ordering and 490 hours a year of counting, ordering and invoice work, worth about $7,350 at $15 an hour.
+
+## Who it's for
+- Independent bars and bar-restaurants in the US that count liquor, beer and wine by hand or in a spreadsheet and buy from more than one supplier.
+
+## What it does
+- The count: in shelf order, already filled in with what should be on the shelf. Anyone on the team can count; several people can count at once.
+- Invoices: send a photo or forward the email. Rotely reads the lines and prices.
+- Prices: shows where the same bottle is cheaper at another supplier and what that's worth a month.
+- Orders: drafts each supplier's order from pars and sales; nothing goes out until the owner or manager says so.
+- Sales: reads the register's daily sales report by item. No integration or new hardware. Rotely checks that the register can send one before the bar pays.
+- Monday brief and alerts by text or email: price increases, invoices that don't match the order, running low.
+- Monthly report: purchases, ending inventory and cost of goods in one Excel or PDF file.
+
+## Pricing and terms
+- Holiday deal: $99 a month (regular $149) or $999 a year per bar plus tax, for bars that sign up by Dec 31, 2026. No setup fee, no processing fee.
+- Pay monthly or yearly, no contract. Cancel any time by emailing support@rotely.co; the plan runs through the month or year already paid for, with no partial-month or partial-year refunds. A STOP or CANCEL text only stops the texts. Pause for up to 3 months, $0 while paused.
+- Setup: the bar sends a few invoices and its daily sales report by item, and Rotely builds the products, shelf order and pars from them. Free until the first full count, up to two weeks.
+- The bar's data is its own. It can be downloaded any time, and for 30 days after the bar leaves Rotely sends a copy on request.
+
+## Contact
+- Web: https://rotely.co/
+- Email: support@rotely.co
+- Text or call: (325) 221-4683
+
+## Pages
+- [Home](https://rotely.co/): what Rotely does, pricing, questions, sign-up
+- [Terms](https://rotely.co/terms.html)
+- [Privacy](https://rotely.co/privacy.html)
+
+## Local pages
+- [Bar inventory software for Austin bars](https://rotely.co/bar-inventory-software-austin): Texas package store price checks, drink tax math and pars for Austin's big weeks.
+- [Bar inventory software for San Angelo bars](https://rotely.co/bar-inventory-software-san-angelo): where Rotely started, Texas package store rules and drink tax math.
+
+## Free tools
+- [Pour cost calculator](https://rotely.co/pour-cost-calculator): cost of each pint, glass or shot from what a keg or bottle cost, and the pour cost at a menu price.
+- [Par level calculator](https://rotely.co/par-level-calculator): par for each bottle or keg from weekly use, days between deliveries and lead time, and how many to order today.
+- [Bar inventory count sheet](https://rotely.co/bar-inventory-count-sheet): a count sheet for liquor, beer and wine in shelf order, to print or download as a spreadsheet.
+- [Bar inventory spreadsheet vs app](https://rotely.co/bar-inventory-spreadsheet-vs-app): the signs a count spreadsheet is costing a bar money, what an app should do instead, and a 10-minute test.
+- [Free bar tools](https://rotely.co/tools): all of Rotely's free tools.
+- [RNN: Rotely News Network](https://rotely.co/news): satirical bar news. Every person and bar is made up.

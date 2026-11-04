@@ -1,0 +1,20 @@
+{
+ "name": "Rotely",
+ "short_name": "Rotely",
+ "start_url": "/",
+ "display": "browser",
+ "background_color": "#F2EFE9",
+ "theme_color": "#2D2C2A",
+ "icons": [
+  {
+   "src": "/assets/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/assets/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}
