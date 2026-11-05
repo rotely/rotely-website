@@ -18,4 +18,11 @@ function fill(){var c=clk();c.src=get(K).slice(0,80);
 each("src "+U+" click_id click_type",function(k){d.querySelectorAll('input[name="'+k+'"]').forEach(function(f){if(c[k]&&!f.value)f.value=c[k]})});
 }
 d.readyState<"l"?fill():d.addEventListener("DOMContentLoaded",fill)
+(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,d,"clarity","script","z916qssiqm");
+var qv=0,vis=0,sc=0,t0=Date.now();
+function QV(){if(qv)return;qv=1;try{if(typeof fbq=="function")fbq("trackCustom","QualityVisit")}catch{}}
+function chk(){var h=d.documentElement,m=Math.max(1,h.scrollHeight-innerHeight);if((scrollY/m)>=.5)sc=1;if(sc&&Date.now()-t0>=45e3&&d.visibilityState=="visible")QV()}
+addEventListener("scroll",chk,{passive:true});setInterval(chk,5e3);
+d.addEventListener("focusin",function(e){var f=e.target&&e.target.form;if(f&&f.id=="setup-form")QV()});
+d.addEventListener("click",function(e){var a=e.target&&e.target.closest&&e.target.closest("a[href*='app.rotely.co/demo']");if(a)QV()});
 })();
