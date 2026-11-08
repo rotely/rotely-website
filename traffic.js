@@ -17,7 +17,7 @@ if(n.click_id?n.click_id!=o.click_id:m&&!o.click_id&&!o.utm_campaign)put(C,JSON.
 function fill(){var c=clk();c.src=get(K).slice(0,80);
 each("src "+U+" click_id click_type",function(k){d.querySelectorAll('input[name="'+k+'"]').forEach(function(f){if(c[k]&&!f.value)f.value=c[k]})});
 }
-d.readyState<"l"?fill():d.addEventListener("DOMContentLoaded",fill)
+d.readyState<"l"?fill():d.addEventListener("DOMContentLoaded",fill);
 (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,d,"clarity","script","z916qssiqm");
 var qv=0,vis=0,sc=0,t0=Date.now();
 function QV(){if(qv)return;qv=1;try{if(typeof fbq=="function")fbq("trackCustom","QualityVisit")}catch{}}
