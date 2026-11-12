@@ -447,3 +447,9 @@ body{text-rendering:optimizeLegibility}
 .v2 .fsoc a{width:auto;aspect-ratio:1}
 #b-now::placeholder{font-size:.875rem}
 }
+/* Footer links: a tap area at least 32px tall on every page, same font and colour. */
+.v2 .fcol ul{gap:0}
+.v2 .fcol a{display:inline-flex;align-items:center;min-height:36px}
+.v2 .fbase a{display:inline-block;padding:6px 0}
+/* Header fits a 320px phone without sideways scroll. */
+@media (max-width:339px){.v2 .site-head .wrap{gap:8px}.v2 .nav .btn{padding:0 10px}.v2 .mnav{margin-left:2px}}
