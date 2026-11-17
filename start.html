@@ -582,6 +582,21 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .stc-rows .fix .q { box-shadow: inset 0 0 0 1.5px var(--green); }
 .st-count figcaption { margin-top: 10px; font-size: 13px; line-height: 1.4; color: rgba(242,239,233,.72); }
 .st-look.st-tools { margin-top: 0; }
+.st-ref { margin: 0 0 16px; }
+.st-ref summary { cursor: pointer; font-size: .875rem; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: flex; align-items: center; }
+.st-ref .field { margin-top: 4px; }
+#setup-form .consent { margin-top: 16px; }
+@media (max-width: 719px) {
+  .st-hero .wrap { padding-top: 20px; gap: 16px; }
+  .st-hero h1#h1 { font-size: 2.125rem; line-height: 1.08; margin-bottom: 8px; }
+  .st-sub { display: none; }
+  .st-checks { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; }
+  .st-checks li:nth-child(n+3) { display: none; }
+  #form-card { padding: 18px 16px; }
+  #setup-form .field { margin-bottom: 10px; }
+  #setup-form .field input { min-height: 48px; }
+  .st-ref { margin-bottom: 8px; }
+}
 .st-look { display: block; text-align: center; margin: 14px 0 2px; padding: 12px 0; min-height: 44px; font-weight: 600; font-size: 15px; color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 .st-blocks .wrap { max-width: 34rem; display: grid; gap: 28px; padding-top: 0; padding-bottom: 0; }
 .st-blocks h2 { font-size: 24px; letter-spacing: -.02em; margin: 0 0 12px; }
@@ -614,7 +629,6 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         </ul>
       </div>
       <div class="card" id="form-card"><span id="setup" aria-hidden="true"></span>
-        <p class="rec-note" style="font-size:.8125rem;opacity:.75;margin:0 0 12px">This page records what you type to help us improve it.</p>
         <form id="setup-form" name="setup" method="POST" action="https://app.rotely.co/signup" novalidate>
 <input type="hidden" name="src" value="">
 <input type="hidden" name="utm_medium" value="">
@@ -631,16 +645,19 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
           <div class="field"><label for="f-bar">Bar name</label><input id="f-bar" name="bar" type="text" placeholder="Main Street Tap" autocomplete="organization" autocapitalize="words" required aria-describedby="e-bar"><span class="err" id="e-bar"></span></div>
           <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" type="text" placeholder="Maria Lopez" autocomplete="name" autocapitalize="words" required aria-describedby="e-name"><span class="err" id="e-name"></span></div>
           <div class="field"><label for="f-phone">Mobile number <span class="hint">We text you a code to sign in. No password.</span></label><input id="f-phone" name="phone" type="tel" placeholder="(325) 555-0142" autocomplete="tel" inputmode="tel" required aria-describedby="e-phone" data-clarity-mask="true"><span class="err" id="e-phone"></span></div>
+          <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" placeholder="maria@example.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required aria-describedby="e-email"><span class="err" id="e-email"></span></div>
+          <p class="err" id="send-err" role="alert" hidden>That didn't go through. Text us at <a href="sms:+13252214683" style="color:inherit">(325) 221-4683</a> or email <a href="mailto:support@rotely.co" style="color:inherit">support@rotely.co</a> and we'll get you set up.</p>
+          <details class="st-ref"><summary>Someone sent you?</summary>
+            <div class="field"><label for="f-ref">Who told you about Rotely? <span class="opt">Optional. If someone sent you, Rotely pays them for it.</span></label><input id="f-ref" name="referred_by" type="text" maxlength="80" placeholder="Example: Mike at Joe's Bar" autocomplete="off"></div>
+          </details>
+          <button class="btn btn-go" type="submit" id="setup-go">Start free <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <p class="legal">See our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
+          <p class="fine">Free until your first full count, up to two weeks. Holiday deal: $99 a month, locked in for as long as you stay subscribed. Sign up by Dec 31. Regular $149, plus tax.</p>
           <label class="consent" for="f-sms">
             <input id="f-sms" name="sms_consent" type="checkbox" value="yes">
             <span><b>Optional.</b> Text me at this mobile number from Rotely about my account, including counts, weekly summaries and order drafts. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase.</span>
           </label>
-          <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" placeholder="maria@example.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required aria-describedby="e-email"><span class="err" id="e-email"></span></div>
-          <div class="field"><label for="f-ref">Who told you about Rotely? <span class="opt">Optional. If someone sent you, Rotely pays them for it.</span></label><input id="f-ref" name="referred_by" type="text" maxlength="80" placeholder="Example: Mike at Joe's Bar" autocomplete="off"></div>
-          <p class="legal">See our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
-          <p class="err" id="send-err" role="alert" hidden>That didn't go through. Text us at <a href="sms:+13252214683" style="color:inherit">(325) 221-4683</a> or email <a href="mailto:support@rotely.co" style="color:inherit">support@rotely.co</a> and we'll get you set up.</p>
-          <button class="btn btn-go" type="submit" id="setup-go">Start free <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
-          <p class="fine">Free until your first full count, up to two weeks. Holiday deal: $99 a month, locked in for as long as you stay subscribed. Sign up by Dec 31. Regular $149, plus tax.</p>
+        <p class="rec-note" style="font-size:.8125rem;opacity:.75;margin:12px 0 0">This page records what you type to help us improve it.</p>
         </form>
         <div class="thanks" id="thanks" tabindex="-1" role="status">
           <div class="ok"><svg aria-hidden="true"><use href="#i-check"/></svg></div>
