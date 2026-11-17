@@ -2,9 +2,6 @@
 
 > Bar inventory and ordering for independent bars, by text and web. Rotely fills in the bar's count shelf by shelf from invoices and sales, so the staff only fix what's different; checks every invoice price against the bar's other suppliers; and drafts orders the owner approves before anything is sent. Holiday deal: $99 a month (regular $149) or $999 a year per bar plus tax, for bars that sign up by Dec 31, 2026, paid monthly or yearly, free until the first full count, up to two weeks.
 
-## A real result
-- At its first bar, a Texas bar that buys from several suppliers, Rotely can save about $15,790 a year in money and time. From the bar's own invoices: $1,860 a year paid above its cheaper supplier and $340 a year in price rises found. Estimates: about $6,240 a year less over-ordering and 490 hours a year of counting, ordering and invoice work, worth about $7,350 at $15 an hour.
-
 ## Who it's for
 - Independent bars and bar-restaurants in the US that count liquor, beer and wine by hand or in a spreadsheet and buy from more than one supplier.
 

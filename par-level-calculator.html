@@ -152,7 +152,7 @@ td:nth-child(n+2){white-space:nowrap}
       <div class="field">
         <label for="pad">Extra for a busy week</label>
         <div class="inrow"><input id="pad" inputmode="decimal" autocomplete="off" placeholder="Example: 50"><span class="unit">%</span></div>
-        <span class="hint">50 keeps half a week's worth extra. Blank means none.</span>
+        <span class="hint">50 adds 50% extra for the days between deliveries plus the wait for your order. Blank means none.</span>
         <span class="err" id="pad-e"></span>
       </div>
       <div class="field">
@@ -183,7 +183,7 @@ td:nth-child(n+2){white-space:nowrap}
 
   <div class="pgrid"><article class="guide">
     <h2>How par works</h2>
-    <p>Par is how many of a bottle you want on the shelf right after a delivery. It has to cover everything you'll pour until the next delivery shows up, plus some extra for a busy week.</p>
+    <p>Par is the target total for stock on the shelf plus what you order. It covers your estimated use for the days between deliveries plus the wait for your order, with any extra you enter.</p>
     <p>Say you go through 12 bottles of Tito's a week, your delivery comes every 7 days, and it takes 2 days to show up after you order. That stock has to last 9 days. 12 a week is about 1.7 a day, so 9 days is about 15.4 bottles. Add 50% for a busy week and you get 23.1. Round up: your par is 24.</p>
     <p>If you have 9 on the shelf when you order, you need 15 more. If Tito's only comes in cases of 12, that's 2 cases.</p>
 
@@ -258,7 +258,7 @@ td:nth-child(n+2){white-space:nowrap}
     if(par<1)par=1;
     $("o-day").textContent=fmt(day);
     $("o-big").textContent=par.toLocaleString("en-US");
-    $("o-say").textContent="Keep "+par+" on the shelf right after each delivery.";
+    $("o-say").textContent="Aim for a total of "+par+" on the shelf and in today's order.";
     if(h===null||isNaN(h)||h<0){$("o-order").textContent="Add what's on the shelf";return}
     var need=Math.max(0,Math.ceil(par-h-1e-9));
     if(need===0){$("o-order").textContent="None, you're at par";return}

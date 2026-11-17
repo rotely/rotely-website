@@ -370,6 +370,25 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .form-grid { display: grid; gap: 40px; }
 @media (min-width: 900px) { .form-grid { grid-template-columns: .85fr 1.15fr; gap: 72px; align-items: start; } }
 .form-grid .head { margin-bottom: 0; }
+.st-ref { margin: 0 0 16px; }
+.st-ref summary { cursor: pointer; font-size: .875rem; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: flex; align-items: center; }
+.st-ref .field { margin-top: 4px; }
+#setup-form .consent { margin-top: 16px; }
+@media (min-width: 900px) {
+  #setup .form-grid { grid-template-rows: auto 1fr; row-gap: 0; }
+  #setup .head { grid-column: 1; grid-row: 1; }
+  #setup #form-card { grid-column: 2; grid-row: 1 / span 2; }
+  #setup .setup-next { grid-column: 1; grid-row: 2; }
+}
+@media (max-width: 719px) {
+  #setup { padding-top: 24px; }
+  #setup .form-grid { gap: 16px; }
+  #setup .head h2 { font-size: 2rem; line-height: 1.08; }
+  #form-card { padding: 18px 16px; }
+  #setup-form .field { margin-bottom: 10px; }
+  #setup-form .field input { min-height: 48px; }
+  .st-ref { margin-bottom: 8px; }
+}
 .next { list-style: none; padding: 0; margin: 30px 0 0; display: grid; gap: 16px; }
 .next li { display: grid; grid-template-columns: 32px 1fr; gap: 14px; }
 .next .n { width: 32px; height: 32px; border-radius: 50%; background: var(--green); color: var(--ink); display: grid; place-items: center; font-size: var(--t-sm); font-weight: 700; }
@@ -781,7 +800,7 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
             <tr><th scope="row">Invoices by photo or email, included</th><td class="rc" data-l="Rotely"><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Yes</span></td><td data-l="Clipboard">Typed by hand</td><td data-l="Scale systems">Varies</td><td data-l="Typical apps">Often on higher plans</td></tr>
             <tr><th scope="row">Orders drafted, approved by text</th><td class="rc" data-l="Rotely"><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Yes</span></td><td data-l="Clipboard">No</td><td data-l="Scale systems">Varies</td><td data-l="Typical apps">Drafted in the app</td></tr>
             <tr><th scope="row">Monday summary by text or email</th><td class="rc" data-l="Rotely"><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Yes</span></td><td data-l="Clipboard">No</td><td data-l="Scale systems">In the app</td><td data-l="Typical apps">In the app</td></tr>
-            <tr><th scope="row">Works without connecting your register</th><td class="rc" data-l="Rotely"><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Yes, by a daily sales report by item</span></td><td data-l="Clipboard">No</td><td data-l="Scale systems">Varies</td><td data-l="Typical apps">Varies</td></tr>
+            <tr><th scope="row">Works without connecting your register</th><td class="rc" data-l="Rotely"><span class="yes"><svg aria-hidden="true"><use href="#i-check"/></svg>Yes, by a daily sales report by item</span></td><td data-l="Clipboard">Yes</td><td data-l="Scale systems">Varies</td><td data-l="Typical apps">Varies</td></tr>
           </tbody>
         </table>
       </div>
@@ -825,19 +844,8 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
         <span class="kicker">Set up my bar</span>
         <h2 id="su-h">Tell us about your&nbsp;bar.</h2>
         <p>Four quick fields, plus an optional one. Then we set it up for you.</p>
-        <h3 class="next-h">What happens&nbsp;next</h3>
-        <ol class="next">
-          <li><span class="n" aria-hidden="true">1</span><div><b>You send invoices</b><p>Photos or emails, plus your register's daily sales report by item.</p></div></li>
-          <li><span class="n" aria-hidden="true">2</span><div><b>We set it up for you</b><p>Your bottles, vendors and shelf order.</p></div></li>
-          <li><span class="n" aria-hidden="true">3</span><div><b>You do your first count</b><p>Count your shelves in order. The count starts with what should be on the shelf, so your staff only fix the bottles that don't match.</p></div></li>
-        </ol>
-        <ul class="assure">
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Free until your first full count, <span class="upto">up to two weeks.</span></span></li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg>Pay monthly or yearly. No setup fee.</li>
-        </ul>
       </div>
       <div class="card" id="form-card">
-        <p class="rec-note" style="font-size:.8125rem;opacity:.75;margin:0 0 12px">This page records what you type to help us improve it.</p>
         <form id="setup-form" name="setup" method="POST" action="https://app.rotely.co/signup" novalidate>
 <input type="hidden" name="src" value="">
 <input type="hidden" name="utm_medium" value="">
@@ -851,26 +859,41 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
             <b>Please fix <span id="errcount">these</span> to continue:</b>
             <ul id="errlist"></ul>
           </div>
-          <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" type="text" placeholder="Maria Lopez" autocomplete="name" autocapitalize="words" required aria-describedby="e-name"><span class="err" id="e-name"></span></div>
           <div class="field"><label for="f-bar">Bar name</label><input id="f-bar" name="bar" type="text" placeholder="Main Street Tap" autocomplete="organization" autocapitalize="words" required aria-describedby="e-bar"><span class="err" id="e-bar"></span></div>
+          <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" type="text" placeholder="Maria Lopez" autocomplete="name" autocapitalize="words" required aria-describedby="e-name"><span class="err" id="e-name"></span></div>
           <div class="field"><label for="f-phone">Mobile number <span class="hint">We text you a sign-in code at this number.</span></label><input id="f-phone" name="phone" type="tel" placeholder="(325) 555-0142" autocomplete="tel" inputmode="tel" required aria-describedby="e-phone" data-clarity-mask="true"><span class="err" id="e-phone"></span></div>
+          <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" placeholder="maria@example.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required aria-describedby="e-email"><span class="err" id="e-email"></span></div>
+          <p class="err" id="send-err" role="alert" hidden>That didn't go through. Text us at <a href="sms:+13252214683" style="color:inherit">(325) 221-4683</a> or email <a href="mailto:support@rotely.co" style="color:inherit">support@rotely.co</a> and we'll get you set up.</p>
+          <details class="st-ref"><summary>Someone sent you?</summary>
+            <div class="field"><label for="f-ref">Who told you about Rotely? <span class="opt">Optional. If someone sent you, Rotely pays them for it.</span></label><input id="f-ref" name="referred_by" type="text" maxlength="80" placeholder="Example: Mike at Joe's Bar" autocomplete="off"></div>
+          </details>
+          <button class="btn btn-go" type="submit" id="setup-go">Set up my bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <p class="legal">See our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</p>
+          <p class="fine">Free until your first full count, <span class="upto">up to two weeks.</span></p>
+          <p class="fine">Holiday deal: $99 a month, regular $149, plus tax. Or $999 a year. Billing starts after your free period. Pay monthly or yearly.</p>
           <label class="consent" for="f-sms">
             <input id="f-sms" name="sms_consent" type="checkbox" value="yes">
             <span><b>Optional.</b> Text me at this mobile number from Rotely about my account, including counts, weekly summaries and order drafts. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase.</span>
           </label>
-          <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" placeholder="maria@example.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required aria-describedby="e-email"><span class="err" id="e-email"></span></div>
-          <div class="field"><label for="f-ref">Who told you about Rotely? <span class="opt">Optional. If someone sent you, Rotely pays them for it.</span></label><input id="f-ref" name="referred_by" type="text" maxlength="80" placeholder="Example: Mike at Joe's Bar" autocomplete="off"></div>
-          <p class="legal">See our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</p>
-          <p class="err" id="send-err" role="alert" hidden>That didn't go through. Text us at <a href="sms:+13252214683" style="color:inherit">(325) 221-4683</a> or email <a href="mailto:support@rotely.co" style="color:inherit">support@rotely.co</a> and we'll get you set up.</p>
-          <button class="btn btn-go" type="submit" id="setup-go">Set up my bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
-          <p class="fine">Free until your first full count, <span class="upto">up to two weeks.</span></p>
-          <p class="fine">Holiday deal: $99 a month, regular $149, plus tax. Or $999 a year. Billing starts after your free period. Pay monthly or yearly.</p>
+        <p class="rec-note" style="font-size:.8125rem;opacity:.75;margin:12px 0 0">This page records what you type to help us improve it.</p>
         </form>
         <div class="thanks" id="thanks" tabindex="-1" role="status">
           <div class="ok"><svg aria-hidden="true"><use href="#i-check"/></svg></div>
           <h3>Thanks. Check your email for your setup&nbsp;link.</h3>
           <p>Keep a recent invoice handy.</p>
         </div>
+      </div>
+      <div class="setup-next">
+          <h3 class="next-h">What happens&nbsp;next</h3>
+          <ol class="next">
+            <li><span class="n" aria-hidden="true">1</span><div><b>You send invoices</b><p>Photos or emails, plus your register's daily sales report by item.</p></div></li>
+            <li><span class="n" aria-hidden="true">2</span><div><b>We set it up for you</b><p>Your bottles, vendors and shelf order.</p></div></li>
+            <li><span class="n" aria-hidden="true">3</span><div><b>You do your first count</b><p>Count your shelves in order. The count starts with what should be on the shelf, so your staff only fix the bottles that don't match.</p></div></li>
+          </ol>
+          <ul class="assure">
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Free until your first full count, <span class="upto">up to two weeks.</span></span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg>Pay monthly or yearly. No setup fee.</li>
+          </ul>
       </div>
     </div>
   </section>
