@@ -1,5 +1,13 @@
 (function () {
 var a = window.ROTELY_ADS || {}, d = document, w = window;
+// Keep reviewer visits out of ad tags as well as traffic.js analytics.
+var internal = "", internalKey = "rotely_internal";
+try { internal = new URLSearchParams(w.location.search).get("internal") || ""; } catch (e) {}
+if (internal) {
+try { if (internal === "1") w.localStorage.setItem(internalKey, "1"); else w.localStorage.removeItem(internalKey); } catch (e) {}
+}
+if (internal === "1") return;
+try { if (w.localStorage.getItem(internalKey) === "1") return; } catch (e) {}
 var g = String(a.google || ""), m = String(a.meta || ""), u = String(a.ms || "");
 var ok = /^[A-Za-z0-9_-]{1,64}$/;
 function load(src) { var s = d.createElement("script"); s.async = true; s.src = src; d.head.appendChild(s); }

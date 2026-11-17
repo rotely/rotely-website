@@ -1,12 +1,12 @@
 # Rotely
 
-> Bar inventory and ordering for independent bars, by text and web. Rotely fills in the bar's count shelf by shelf from invoices and sales, so the staff only fix what's different; checks every invoice price against the bar's other suppliers; and drafts orders the owner approves before anything is sent. Holiday deal: $99 a month (regular $149) or $999 a year per bar plus tax, for bars that sign up by Dec 31, 2026, paid monthly or yearly, free until the first full count, up to two weeks.
+> Bar inventory and ordering for independent bars, by text and web. Staff check starting stock on the first count. After that, Rotely uses invoices and sales to work out expected stock; it checks every invoice price against the bar's other suppliers; and drafts orders the owner approves before anything is sent. Holiday deal: $99 a month (regular $149) or $999 a year per bar plus tax, for bars that sign up by Dec 31, 2026, paid monthly or yearly, free until the first full count, up to two weeks.
 
 ## Who it's for
 - Independent bars and bar-restaurants in the US that count liquor, beer and wine by hand or in a spreadsheet and buy from more than one supplier.
 
 ## What it does
-- The count: in shelf order, already filled in with what should be on the shelf. Anyone on the team can count; several people can count at once.
+- The count: check starting stock on the first count. After that, Rotely uses invoices and sales to work out what should be on the shelf. Anyone on the team can count; several people can count at once.
 - Invoices: send a photo or forward the email. Rotely reads the lines and prices.
 - Prices: shows where the same bottle is cheaper at another supplier and what that's worth a month.
 - Orders: drafts each supplier's order from pars and sales; nothing goes out until the owner or manager says so.

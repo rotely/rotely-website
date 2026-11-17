@@ -1,13 +1,13 @@
 <!doctype html><html lang="en"><head><meta charset=utf8>
 <meta name="msvalidate.01" content="986710BC2685E41D26140B2816E31B0B"><meta name="p:domain_verify" content="eab4a82215b88de4ae2df0a710c81897"/><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Rotely: stop counting the bar from zero</title>
-<meta name="description" content="Start bar inventory with what should be on your shelf, using invoices and daily sales. We set it up for you. Free until your first full count, up to two weeks.">
+<meta name="description" content="Check your starting stock, then track changes with invoices and sales. We set it up for you. Free until your first full count, up to two weeks.">
 <link rel="canonical" href="https://rotely.co/start">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Rotely: stop counting the bar from zero", "url": "https://rotely.co/start"}</script>
 <meta property="og:site_name" content="Rotely">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rotely.co/start">
 <meta property="og:title" content="Rotely: bar inventory and ordering for independent bars">
-<meta property="og:description" content="At our first bar, Rotely can save over $16,800 a year in money and time, by our estimate. Your count comes filled in, shelf by shelf. We set it up for you. Holiday deal: $99 a month, regular $149, plus tax. Or $999 a year. Free until your first full count, up to two weeks.">
+<meta property="og:description" content="At our first bar, Rotely can save over $16,800 a year in money and time, by our estimate. Check starting stock on the first count; track changes after that. We set it up for you. Holiday deal: $99 a month, regular $149, plus tax. Or $999 a year. Free until your first full count, up to two weeks.">
 <meta property="og:image" content="https://rotely.co/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -598,6 +598,11 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
   .st-ref { margin-bottom: 8px; }
 }
 .st-look { display: block; text-align: center; margin: 14px 0 2px; padding: 12px 0; min-height: 44px; font-weight: 600; font-size: 15px; color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 719px) {
+  .st-hero .st-sub { display: block; font-size: 1rem; line-height: 1.45; margin: 0 0 12px; }
+  .st-hero .st-checks li:nth-child(3) { display: grid; }
+  .st-hero #st-look { margin: 0 0 14px; padding: 8px 0; }
+}
 .st-blocks .wrap { max-width: 34rem; display: grid; gap: 28px; padding-top: 0; padding-bottom: 0; }
 .st-blocks h2 { font-size: 24px; letter-spacing: -.02em; margin: 0 0 12px; }
 .st-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
@@ -619,7 +624,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
     <div class="wrap">
       <div>
         <h1 id="h1"><span id="st-h">Stop counting the bar from zero</span><span class="dot">.</span></h1>
-        <p class="st-sub" id="st-sub">Rotely reads your invoices and your register's daily sales, so your count starts with what should be on the shelf. You fix what's different.</p>
+        <p class="st-sub" id="st-sub">Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different.</p>
         <ul class="st-checks">
           <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>We set it up for you.</span></li>
           <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>No card to start.</span></li>
@@ -629,6 +634,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         </ul>
       </div>
       <div class="card" id="form-card"><span id="setup" aria-hidden="true"></span>
+        <a class="st-look" id="st-look" href="https://app.rotely.co/demo?utm_source=site&amp;utm_medium=web&amp;utm_campaign=start&amp;utm_content=start_demo" data-qv="1">Rather look first? Open the sample bar</a>
         <form id="setup-form" name="setup" method="POST" action="https://app.rotely.co/signup" novalidate>
 <input type="hidden" name="src" value="">
 <input type="hidden" name="utm_medium" value="">
@@ -664,7 +670,6 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
           <h3>Thanks. Check your email for your setup&nbsp;link.</h3>
           <p>Keep a recent invoice handy.</p>
         </div>
-        <a class="st-look" id="st-look" href="https://app.rotely.co/demo?utm_source=site&amp;utm_medium=web&amp;utm_campaign=start&amp;utm_content=start_demo" data-qv="1">Rather look first? Open the sample bar</a>
         <a class="st-look st-tools" href="/tools">Free bar inventory tools</a>
       </div>
       <figure class="st-count" aria-label="Example count">
@@ -675,7 +680,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
           <li class="fix"><span>Lalo Blanco<small>Expected <s>3</s>, counted 2</small></span><span class="q">2</span></li>
           <li><span>Bulleit Rye<small>1L</small></span><span class="q">1.5</span></li>
         </ul>
-        <figcaption>Example: your count comes filled in, shelf by shelf.</figcaption>
+        <figcaption>Example after your first count: expected stock in shelf order.</figcaption>
       </figure>
     </div>
   </section>
@@ -687,7 +692,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         <ol class="st-steps">
           <li><span class="n" aria-hidden="true">1</span><span>Send a few invoices and your register's daily sales report.</span></li>
           <li><span class="n" aria-hidden="true">2</span><span>We set up your bottles, vendors and shelf order.</span></li>
-          <li><span class="n" aria-hidden="true">3</span><span>Count once a week. Fix only what's different.</span></li>
+          <li><span class="n" aria-hidden="true">3</span><span>Count once a week. Check starting stock on the first count; after that, check and fix what's different.</span></li>
         </ol>
       </div>
       <p class="st-proof">Rotely can save one bar over $16,800 a year by our estimate: about $9,500 in money and 490 hours of work. The money alone is over 5 times the regular price.</p>
@@ -763,13 +768,53 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
   var p; try { p = new URLSearchParams(location.search); } catch (e) { return; }
   var c = (p.get('utm_content') || '').toLowerCase();
   if (c.indexOf('invoice') === 0) {
-    document.getElementById('st-h').textContent = 'Snap the invoice. Rotely drafts the order';
-    document.getElementById('st-sub').textContent = 'Rotely reads every invoice, keeps your bottle counts current and drafts the next order. You just check it and press Send.';
+    document.getElementById('st-h').textContent = 'Send invoices. Check your starting stock';
+    document.getElementById('st-sub').textContent = "Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different.";
   }
-  var cl = function (k) { return (p.get(k) || '').replace(/[^\w.-]/g, '').slice(0, 40); };
-  var s = cl('utm_source'), m = cl('utm_campaign'), md = cl('utm_medium');
-  if (s || m) document.querySelectorAll('a[data-qv]').forEach(function (a) {
-    a.href = 'https://app.rotely.co/demo?utm_source=' + encodeURIComponent(s || 'site') + '&utm_medium=' + encodeURIComponent(md || 'web') + '&utm_campaign=' + encodeURIComponent(m || 'start') + '&utm_content=start_demo';
+  // Read the effective acquisition before deferred traffic.js writes it.
+  var read = function (k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
+  var clean = function (v, source) {
+    if (typeof v !== 'string') return '';
+    return v.toLowerCase().replace(source ? /[^a-z0-9._:-]/g : /[^a-z0-9._-]/g, '').slice(0, source ? 80 : 40);
+  };
+  var source = read('rotely_src') || p.get('utm_source') || '', host = '';
+  if (!source) {
+    try { host = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+    if (host && !/(^|\.)rotely\.co$/.test(host)) source = 'ref:' + host;
+  }
+  var old = {}, fresh = {}, hasTags = false;
+  var kinds = ['gclid', 'gbraid', 'wbraid', 'fbclid', 'msclkid'];
+  var fields = ['utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+  try {
+    old = JSON.parse(read('rotely_clk')) || {};
+    if (typeof old !== 'object' || Array.isArray(old)) old = {};
+  } catch (e) {}
+  kinds.forEach(function (k) {
+    var v = p.get(k) || '';
+    if (/^[A-Za-z0-9._-]{1,200}$/.test(v)) { fresh.click_id = v; fresh.click_type = k; }
+  });
+  fields.forEach(function (k) {
+    var v = clean(p.get(k) || '', false);
+    if (v) { fresh[k] = v; hasTags = true; }
+  });
+  var selected = (fresh.click_id ? fresh.click_id != old.click_id : hasTags && !old.click_id && !old.utm_campaign) ? fresh : old;
+  source = clean(source, true);
+  document.querySelectorAll('a[href]').forEach(function (a) {
+    try {
+      var target = new URL(a.href, location.href);
+      if (target.origin !== 'https://app.rotely.co' || target.pathname !== '/demo' || target.username || target.password) return;
+      var href = new URL('https://app.rotely.co/demo');
+      if (source) href.searchParams.set('utm_source', source);
+      fields.forEach(function (k) {
+        var v = selected[k];
+        if (typeof v === 'string' && /^[a-z0-9._-]{1,40}$/.test(v)) href.searchParams.set(k, v);
+      });
+      if (kinds.indexOf(selected.click_type) !== -1 && typeof selected.click_id === 'string' && /^[A-Za-z0-9._-]{1,200}$/.test(selected.click_id)) {
+        href.searchParams.set(selected.click_type, selected.click_id);
+      }
+      href.searchParams.set('rotely_cta', a.closest('footer') ? 'footer_demo' : 'start_demo');
+      a.href = href.href;
+    } catch (e) {}
   });
 })();
 </script>
