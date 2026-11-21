@@ -1,23 +1,91 @@
 <!doctype html><html lang="en"><head><meta charset=utf8>
+<meta name="referrer" content="strict-origin">
+<script>
+// The marketing pages never redeem setup or payment tokens. Keep private returns out of tracking.
+(function () {
+  var url = new URL(location.href), current = new URL(url), share = true;
+  var tag = /^(?:utm_(?:source|medium|campaign|term|content|id|source_platform|creative_format|marketing_tactic)|gclid|gbraid|wbraid|fbclid|msclkid|gad_source|gad_campaignid|internal)$/;
+  var privateKey = /(?:token|session|secret|code|setup.link|phone|email|customer|payment|intent|card|password|name|mobile|address)/i;
+  var privateValue = /(?:@|^cs_(?:test|live)_|^seti_|^pi_|^sk_(?:test|live)_)/i;
+  var publicSections = ['', '#top', '#main', '#how', '#setup', '#price', '#compare', '#faq'];
+  function numberLike(value) {
+    return /^[0-9().+\s-]+$/.test(value) && /^\d{10,19}$/.test(value.replace(/[^0-9]/g, ''));
+  }
+  for (var key of new Set(url.searchParams.keys())) {
+    var values = url.searchParams.getAll(key);
+    var privateNumber = /^utm_/.test(key) && values.some(numberLike);
+    if (privateNumber || !tag.test(key) || values.length !== 1 || !/^[a-z0-9._:-]{1,200}$/i.test(values[0]) || values.some(function (value) { return privateValue.test(value); })) {
+      if (privateNumber || privateKey.test(key) || values.some(function (value) { return privateValue.test(value); })) current.searchParams.delete(key);
+      share = false;
+    }
+  }
+  if (publicSections.indexOf(url.hash) === -1) {
+    if (/[=?@]|(?:token|session|secret|cs_(?:test|live)_|seti_|pi_)/i.test(url.hash)) current.hash = '';
+    share = false;
+  }
+  // Restrict referrer strings that the unchanged shared collector can send to public routes
+  // in this site's sitemap. URL-shaped passwords, nested paths and ambiguous tags stay private.
+  var publicPages = new Set(['/', '/index', '/start', '/about', '/build', '/news', '/tools',
+    '/terms', '/privacy', '/sms', '/bar-inventory-count-sheet', '/bar-inventory-software-austin',
+    '/bar-inventory-software-san-angelo', '/bar-inventory-spreadsheet-vs-app', '/bar-inventory-without-pos-integration',
+    '/liquor-cost-calculator', '/liquor-invoice-price-tracking', '/par-level-calculator',
+    '/pour-cost-calculator', '/weekly-bar-inventory-checklist']);
+  var fields = /^(?:utm_(?:source|medium|campaign|term|content)|gclid|gbraid|wbraid|fbclid|msclkid)$/;
+  var privateGuideValue = /(?:@|(?:^|[-._:])(?:cs_(?:test|live)_|(?:sk|pk|rk)_(?:test|live)_|(?:seti|pi|pm|cus|sub|tok)_|(?:access|refresh|session)[_-]?token|(?:client[_-]?)?secret|bearer[-._:]|gh[pousr]_|AKIA[A-Z0-9]|eyJ[a-z0-9_-]{6,}\.))/i;
+  function safeGuideTag(key, values) {
+    if (!tag.test(key) || key === 'internal' || values.length !== 1 || privateGuideValue.test(values[0])) return false;
+    var value = values[0];
+    if (/^(?:gad_source|gad_campaignid)$/.test(key)) return /^[0-9]{1,24}$/.test(value);
+    if (/^(?:gclid|gbraid|wbraid|fbclid|msclkid)$/.test(key)) return /^[a-z0-9._-]{1,200}$/i.test(value);
+    return /^[a-z0-9][a-z0-9._:-]{0,199}$/i.test(value) && !numberLike(value);
+  }
+  var guide = null;
+  if (document.referrer) {
+    var ref = new URL(document.referrer);
+    if (ref.username || ref.password || ref.hash || ['checkout.stripe.com', 'billing.stripe.com'].includes(ref.hostname)) share = false;
+    else if (ref.origin === url.origin) {
+      if (!publicPages.has(ref.pathname.replace(/\.html$/, ''))) share = false;
+      else if (Array.from(ref.searchParams.keys()).every(function (k) { return safeGuideTag(k, ref.searchParams.getAll(k)); })) guide = ref;
+      else share = false;
+    } else if (!/^https?:$/.test(ref.protocol) || ref.search || (ref.pathname !== '/' && !(ref.origin === 'https://app.rotely.co' && ref.pathname === '/demo'))) share = false;
+  }
+  var savedSource = '', savedClick = {}, internal = current.searchParams.get('internal') === '1';
+  try {
+    savedSource = localStorage.getItem('rotely_src') || '';
+    savedClick = JSON.parse(localStorage.getItem('rotely_clk') || '{}') || {};
+    if (!current.searchParams.has('internal')) internal = localStorage.getItem('rotely_internal') === '1';
+    if (privateValue.test(savedSource) || Object.values(savedClick).some(function (v) { return typeof v === 'string' && privateValue.test(v); })) share = false;
+  } catch (error) { /* The verified guide can still identify the visit if no selection was retained. */ }
+  // The guide usually populated the collector's storage itself. Recover only if neither a
+  // current campaign nor a saved selection exists. Never replace a newer stored click.
+  if (share && guide && !internal && !savedSource && !Object.keys(savedClick).length &&
+      !Array.from(current.searchParams.keys()).some(function (k) { return fields.test(k); })) {
+    guide.searchParams.forEach(function (v, k) { if (fields.test(k)) current.searchParams.set(k, v); });
+  }
+  if (current.href !== url.href) history.replaceState(history.state, '', current.href);
+  window.rotelyMayMeasurePage = share;
+})();
+</script>
+
 <meta name="msvalidate.01" content="986710BC2685E41D26140B2816E31B0B"><meta name="p:domain_verify" content="eab4a82215b88de4ae2df0a710c81897"/><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Rotely: bar inventory and ordering for independent bars</title>
-<meta name="description" content="Liquor inventory software for independent bars. Check starting stock first, then track changes with invoices and sales. We set it up for you.">
+<meta name="description" content="Liquor inventory software for independent bars. We set it up for you. Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.">
 <link rel="canonical" href="https://rotely.co/">
 <meta property="og:site_name" content="Rotely">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rotely.co/">
-<meta property="og:title" content="Rotely: bar inventory and ordering for independent bars">
-<meta property="og:description" content="At our first bar, Rotely can save over $16,800 a year in money and time, by our estimate. Check starting stock on the first count; track changes after that. We set it up for you. Holiday deal: $99 a month, regular $149, plus tax. Or $999 a year. Free until your first full count, up to two weeks.">
+<meta property="og:title" content="Rotely: liquor inventory software for independent bars">
+<meta property="og:description" content="Liquor inventory software for independent bars. Automate what you hate. Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.">
 <meta property="og:image" content="https://rotely.co/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Rotely: bar inventory and ordering. Automate what you hate.">
+<meta property="og:image:alt" content="Rotely: liquor inventory software for independent bars. Automate what you hate.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-32.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="icon" type="image/png" sizes="48x48" href="/assets/icon-48.png">
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://rotely.co/#org","name":"Rotely","url":"https://rotely.co/","logo":"https://rotely.co/assets/icon-512.png","email":"support@rotely.co","telephone":"+1-325-221-4683","areaServed":"US","sameAs":["https://www.instagram.com/rotelyllc/","https://www.tiktok.com/@rotelyllc","https://www.youtube.com/channel/UCvNGb6NhRLjJRde6eQ_kHrg","https://www.facebook.com/rotelyllc","https://x.com/RotelyLLC","https://www.threads.com/@rotelyllc","https://www.pinterest.com/rotelyco/","https://www.linkedin.com/company/rotelyllc/"]},{"@type":"WebSite","@id":"https://rotely.co/#site","name":"Rotely","url":"https://rotely.co/","publisher":{"@id":"https://rotely.co/#org"}},{"@type":"SoftwareApplication","@id":"https://rotely.co/#app","name":"Rotely","applicationCategory":"BusinessApplication","operatingSystem":"Web, iPhone, Android","description":"Liquor inventory software for independent bars. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different. Rotely drafts orders for you to approve.","url":"https://rotely.co/","publisher":{"@id":"https://rotely.co/#org"},"offers":{"@type":"Offer","price":"99","priceCurrency":"USD","description":"Per bar, per month, plus tax. Pay monthly or yearly. Free until the first full count, up to two weeks."}},{"@type":"FAQPage","@id":"https://rotely.co/#faq","mainEntity":[{"@type":"Question","name":"Do I need new hardware?","acceptedAnswer":{"@type":"Answer","text":"No. Rotely runs on the phone and computer you already have."}},{"@type":"Question","name":"Does it work with my register?","acceptedAnswer":{"@type":"Answer","text":"Rotely reads your register's daily sales report by item, so there's nothing to connect. We check that your register can send one before you pay anything."}},{"@type":"Question","name":"How long is setup?","acceptedAnswer":{"@type":"Answer","text":"We set it up for you. Send a few invoices and your register's daily sales report, and we set up your bottles, vendors and shelf order. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different. Nothing to install, no integration to wait on."}},{"@type":"Question","name":"Is there a contract? How do I cancel?","acceptedAnswer":{"@type":"Answer","text":"No. Pay monthly or yearly, no contract, no setup fee. Cancel any time by emailing support@rotely.co. You keep using it through the month you've paid for. We don't refund part of a month. If you pay for a year, you keep Rotely through that year. We don't refund part of a year. Texting STOP only stops the texts. Your data is yours. Download it any time, and for 30 days after you leave, ask and we'll send you a copy. It's free until your first full count, up to two weeks."}},{"@type":"Question","name":"Who sends the orders?","acceptedAnswer":{"@type":"Answer","text":"You approve every one. Rotely drafts the order; nothing goes to a supplier until you sign off."}},{"@type":"Question","name":"Is my data private?","acceptedAnswer":{"@type":"Answer","text":"Only your team and Rotely see your bar's numbers. A few service providers help run Rotely, listed in our Privacy Policy, and we never sell your data."}},{"@type":"Question","name":"I already use inventory software. Do I start over?","acceptedAnswer":{"@type":"Answer","text":"No. Send us an export from what you use now and we'll bring your products and pars over. Rotely picks up from there."}},{"@type":"Question","name":"What is the best liquor inventory app for a small bar?","acceptedAnswer":{"@type":"Answer","text":"Rotely is liquor inventory software for independent bars. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different."}},{"@type":"Question","name":"What does Rotely cost for one bar?","acceptedAnswer":{"@type":"Answer","text":"Rotely is $99 a month plus tax with the holiday deal, regular $149. No setup fee. Sign up by Dec 31, 2026 and you keep this price. Or pay yearly: $999 a year, 44% off the regular $1,788. Free until your first full count, up to two weeks."}},{"@type":"Question","name":"Do my staff still have to count bottles?","acceptedAnswer":{"@type":"Answer","text":"Yes. Check the starting quantities against your shelves on the first count, even when Rotely provides an estimate. On later counts, staff still check the bottles and correct anything that does not match. Rotely does not eliminate the physical count."}},{"@type":"Question","name":"Does Rotely work with my distributor's invoices?","acceptedAnswer":{"@type":"Answer","text":"You can send an invoice photo or forward the invoice email. Rotely reads the invoice lines and uses them with daily register sales to prepare your count and draft orders for your approval."}}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://rotely.co/#org","name":"Rotely","url":"https://rotely.co/","logo":"https://rotely.co/assets/icon-512.png","email":"support@rotely.co","telephone":"+1-325-221-4683","areaServed":"US","sameAs":["https://www.instagram.com/rotelyllc/","https://www.tiktok.com/@rotelyllc","https://www.youtube.com/channel/UCvNGb6NhRLjJRde6eQ_kHrg","https://www.facebook.com/rotelyllc","https://x.com/RotelyLLC","https://www.threads.com/@rotelyllc","https://www.pinterest.com/rotelyco/","https://www.linkedin.com/company/rotelyllc/"]},{"@type":"WebSite","@id":"https://rotely.co/#site","name":"Rotely","url":"https://rotely.co/","publisher":{"@id":"https://rotely.co/#org"}},{"@type":"SoftwareApplication","@id":"https://rotely.co/#app","name":"Rotely","applicationCategory":"BusinessApplication","operatingSystem":"Web, iPhone, Android","description":"Liquor inventory software for independent bars. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different. Rotely drafts orders for you to approve.","url":"https://rotely.co/","publisher":{"@id":"https://rotely.co/#org"},"offers":{"@type":"Offer","price":"99","priceCurrency":"USD","description":"First 30 days free, then $99 a month, plus tax. Holiday deal. Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts."}},{"@type":"FAQPage","@id":"https://rotely.co/#faq","mainEntity":[{"@type":"Question","name":"Do I need new hardware?","acceptedAnswer":{"@type":"Answer","text":"No. Rotely runs on the phone and computer you already have."}},{"@type":"Question","name":"Does it work with my register?","acceptedAnswer":{"@type":"Answer","text":"Rotely reads your register's daily sales report by item, so there's nothing to connect. We check that your register can send one before you pay anything."}},{"@type":"Question","name":"How long is setup?","acceptedAnswer":{"@type":"Answer","text":"We set it up for you. Send a few invoices and your register's daily sales report, and we set up your bottles, vendors and shelf order. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different. Nothing to install, no integration to wait on."}},{"@type":"Question","name":"Is there a contract? How do I cancel?","acceptedAnswer":{"@type":"Answer","text":"No. Pay monthly or yearly, no contract, no setup fee. To cancel, email support@rotely.co before billing starts. If we receive your cancellation email before billing starts and your first charge still goes through, we’ll refund that charge in full. You keep using it through the month you've paid for. We don't refund part of a month. If you pay for a year, you keep Rotely through that year. We don't refund part of a year. Texting STOP only stops the texts. Your data is yours. Download it any time, and for 30 days after you leave, ask and we'll send you a copy. Your first count does not start billing. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts."}},{"@type":"Question","name":"Who sends the orders?","acceptedAnswer":{"@type":"Answer","text":"You approve every one. Rotely drafts the order; nothing goes to a supplier until you sign off."}},{"@type":"Question","name":"Is my data private?","acceptedAnswer":{"@type":"Answer","text":"Only your team and Rotely see your bar's numbers. A few service providers help run Rotely, listed in our Privacy Policy, and we never sell your data."}},{"@type":"Question","name":"I already use inventory software. Do I start over?","acceptedAnswer":{"@type":"Answer","text":"No. Send us an export from what you use now and we'll bring your products and pars over. Rotely picks up from there."}},{"@type":"Question","name":"What is the best liquor inventory app for a small bar?","acceptedAnswer":{"@type":"Answer","text":"Rotely is liquor inventory software for independent bars. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different."}},{"@type":"Question","name":"What does Rotely cost for one bar?","acceptedAnswer":{"@type":"Answer","text":"First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax. The annual deal is 44% off the regular $1,788 a year, plus tax. No setup fee. Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts."}},{"@type":"Question","name":"Do my staff still have to count bottles?","acceptedAnswer":{"@type":"Answer","text":"Yes. Check the starting quantities against your shelves on the first count, even when Rotely provides an estimate. On later counts, staff still check the bottles and correct anything that does not match. Rotely does not eliminate the physical count."}},{"@type":"Question","name":"Does Rotely work with my distributor's invoices?","acceptedAnswer":{"@type":"Answer","text":"You can send an invoice photo or forward the invoice email. Rotely reads the invoice lines and uses them with daily register sales to prepare your count and draft orders for your approval."}}]}]}</script>
 <style>
 @font-face {
   font-family: "Inter";
@@ -373,6 +441,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .st-ref { margin: 0 0 16px; }
 .st-ref summary { cursor: pointer; font-size: .875rem; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: flex; align-items: center; }
 .st-ref .field { margin-top: 4px; }
+#setup-form .signup-offer { margin: 0 0 .75rem; padding: .75rem .875rem; background: var(--bg); border-left: 3px solid var(--green); color: var(--text); font-size: .9375rem; line-height: 1.45; }
 #setup-form .consent { margin-top: 16px; }
 @media (min-width: 900px) {
   #setup .form-grid { grid-template-rows: auto 1fr; row-gap: 0; }
@@ -923,7 +992,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
       <a class="l" href="/tools">Free tools</a>
       <a class="si si-demo" href="https://app.rotely.co/demo">Sample bar</a>
       <a class="si si-in" href="https://app.rotely.co/app/login">Sign in</a>
-      <a class="btn btn-go" href="#setup">Set up my bar</a>
+      <a class="btn btn-go" href="#setup">Start my free month</a>
     </nav>
   </div>
 </header>
@@ -938,12 +1007,12 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         <h2 class="hero-sub hero-h2">Liquor inventory software for independent bars</h2>
         <p class="hero-sub">Inventory, invoices and ordering, without the busywork.</p>
         <p class="hero-sub hero-what">Rotely is liquor inventory software for independent bars. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different. We set it up for you.</p>
+        <p class="hero-risk"><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>First month free.</strong> Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</span></p>
+        <ul class="terms" aria-label="Price and terms"><li>First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax.</li><li class="tbr" role="presentation"></li><li>No setup fee</li><li class="t-mm">Pay monthly or yearly</li><li class="t-hw">No hardware</li></ul>
         <div class="hero-ctas">
-          <a class="btn btn-go" href="#setup">Set up my bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-go" href="#setup">Start my free month <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
           <a class="btn btn-line" href="https://app.rotely.co/demo">See the sample bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
-        <p class="hero-risk"><svg aria-hidden="true"><use href="#i-check"/></svg><span>Free until your first full count, <span class="upto">up to two weeks.</span></span></p>
-        <ul class="terms" aria-label="Price and terms"><li>Holiday deal: <b>$99/month</b> plus tax, regular $149</li><li class="tbr" role="presentation"></li><li>No setup fee</li><li class="t-mm">Pay monthly or yearly</li><li class="t-hw">No hardware</li></ul>
       </div>
       <figure class="stage">
         <div class="phone" aria-hidden="true">
@@ -1026,8 +1095,8 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
         </li>
       </ol>
       <div class="cta-row">
-        <a class="btn btn-go" href="#setup">Set up my bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        <span>Holiday deal: $99/month, regular $149, <span class="tax">plus tax</span>. Or $999 a year. No setup fee. Pay monthly or yearly. Free until your first full count, up to two weeks.</span>
+        <a class="btn btn-go" href="#setup">Start my free month <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <span>First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax. No setup fee. Pay monthly or yearly. Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</span>
       </div>
     </div>
   </section>
@@ -1144,25 +1213,25 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
       <div class="head" style="margin-bottom:0">
         <span class="kicker">Price</span>
         <h2 id="pr-h">One price per&nbsp;bar.</h2>
-        <p>Everything on this page, one price. Pay by card or bank transfer, with no processing fee.</p>
+        <p>Everything on this page, one price. Add a card at signup. No processing fee.</p>
         <div class="context">
           <p>Comparable bar inventory plans run $199 to about $270 a month.</p>
-          <p>Rotely is <b>$99 a month</b> with the holiday deal, regular $149. <b>No setup fee</b>.</p>
+          <p>First 30 days free, then $99 a month, plus tax. Holiday deal. Regular price: $149 a month, plus tax. <b>No setup fee</b>.</p>
         </div>
       </div>
       <div class="card lift">
         <span class="deal">Holiday deal <span class="deal-off">34% off</span></span>
-        <div class="amt"><b>$99</b><span>per month <s class="was">$149</s> <span class="tax">plus tax</span></span></div>
-            <p class="deal-note">Sign up by Dec 31, 2026 and you keep this price. Or pay yearly: <b>$999 a year</b>, 44% off the regular $1,788.</p>
+        <div class="amt"><b>$99</b><span>a month, <span class="tax">plus tax.</span> Holiday deal.</span></div>
+            <p class="deal-note">First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Save 44% off the regular $1,788 a year, plus tax.</p>
             <p class="anchor">At Warehouse 150, Rotely can save over <b>$16,800 a year</b>: about $9,500 in money, over 5 times a year of Rotely at $149 a month, plus 490 hours of work.</p>
         <ul>
           <li><svg aria-hidden="true"><use href="#i-check"/></svg>No setup fee</li>
           <li><svg aria-hidden="true"><use href="#i-check"/></svg>Pay monthly or yearly</li>
           <li><svg aria-hidden="true"><use href="#i-check"/></svg>No hardware</li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Free until your first full count, <span class="upto">up to two weeks</span></span></li>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</span></li>
         </ul>
-        <a class="btn btn-go" href="#setup">Set up my bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        <p class="fine">To cancel, email <a href="mailto:support@rotely.co" style="color:inherit">support@rotely.co</a>. You keep using it through the month you've paid for. We don't refund part of a month. If you pay for a year, you keep Rotely through that year. We don't refund part of a year. Texting STOP only stops the texts. Your data is yours: download it any time, and for 30 days after you leave, ask and we'll send you a copy.</p>
+        <a class="btn btn-go" href="#setup">Start my free month <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <p class="fine">To cancel, email <a href="mailto:support@rotely.co" style="color:inherit">support@rotely.co</a> before billing starts. You keep using it through the month you've paid for. We don't refund part of a month. If you pay for a year, you keep Rotely through that year. We don't refund part of a year. Texting STOP only stops the texts. Your data is yours: download it any time, and for 30 days after you leave, ask and we'll send you a copy.</p>
       </div>
     </div>
   </section>
@@ -1173,10 +1242,10 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
       <div class="head">
         <span class="kicker">Set up my bar</span>
         <h2 id="su-h">Tell us about your&nbsp;bar.</h2>
-        <p>Four quick fields, plus an optional one. Then we set it up for you.</p>
+        <p>Tell us about your bar, then add your card at checkout. We set up your inventory for you.</p>
       </div>
       <div class="card" id="form-card">
-        <form id="setup-form" name="setup" method="POST" action="https://app.rotely.co/signup" novalidate>
+        <form id="setup-form" name="setup" method="POST" action="https://app.rotely.co/signup" novalidate tabindex="-1" aria-label="Bar signup" data-clarity-mask="true">
 <input type="hidden" name="src" value="">
 <input type="hidden" name="utm_medium" value="">
 <input type="hidden" name="utm_campaign" value="">
@@ -1197,10 +1266,10 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
           <details class="st-ref"><summary>Someone sent you?</summary>
             <div class="field"><label for="f-ref">Who told you about Rotely? <span class="opt">Optional. If someone sent you, Rotely pays them for it.</span></label><input id="f-ref" name="referred_by" type="text" maxlength="80" placeholder="Example: Mike at Joe's Bar" autocomplete="off"></div>
           </details>
-          <button class="btn btn-go" type="submit" id="setup-go">Set up my bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
-          <p class="legal">See our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</p>
-          <p class="fine">Free until your first full count, <span class="upto">up to two weeks.</span></p>
-          <p class="fine">Holiday deal: $99 a month, regular $149, plus tax. Or $999 a year. Billing starts after your free period. Pay monthly or yearly.</p>
+          <p class="signup-offer" id="signup-offer">You won't be charged today. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts. First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. To cancel, email <a href="mailto:support@rotely.co">support@rotely.co</a> before billing starts. If we receive your cancellation email before billing starts and your first charge still goes through, we’ll refund that charge in full.</p>
+          <button class="btn btn-go" type="submit" id="setup-go" aria-describedby="signup-offer">Continue to secure checkout <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <p class="legal">See our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
+          <p class="fine">First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax. Your first charge covers one month or one year, depending on the plan you choose.</p>
           <label class="consent" for="f-sms">
             <input id="f-sms" name="sms_consent" type="checkbox" value="yes">
             <span><b>Optional.</b> Text me at this mobile number from Rotely about my account, including counts, weekly summaries and order drafts. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase.</span>
@@ -1221,7 +1290,7 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
             <li><span class="n" aria-hidden="true">3</span><div><b>You do your first count</b><p>Check the starting quantities against your shelves and fix what's different. Starting quantities can be estimates.</p></div></li>
           </ol>
           <ul class="assure">
-            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Free until your first full count, <span class="upto">up to two weeks.</span></span></li>
+            <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</span></li>
             <li><svg aria-hidden="true"><use href="#i-check"/></svg>Pay monthly or yearly. No setup fee.</li>
           </ul>
       </div>
@@ -1236,12 +1305,12 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
         <details><summary>Do I need new hardware?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>No. Rotely runs on the phone and computer you already have.</p></details>
         <details><summary>Does it work with my register?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>Rotely reads your register's daily sales report by item, so there's nothing to connect. We check that your register can send one before you pay anything.</p></details>
         <details><summary>How long is setup?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>We set it up for you. Send a few invoices and your register's daily sales report, and we set up your bottles, vendors and shelf order. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different. Nothing to install, no integration to wait on.</p></details>
-        <details><summary>Is there a contract? How do I cancel?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>No. Pay monthly or yearly, no contract, no setup fee. Cancel any time by emailing <a href="mailto:support@rotely.co" style="color:inherit">support@rotely.co</a>. You keep using it through the month you've paid for. We don't refund part of a month. If you pay for a year, you keep Rotely through that year. We don't refund part of a year. Texting STOP only stops the texts. Your data is yours. Download it any time, and for 30 days after you leave, ask and we'll send you a copy. It's free until your first full count, up to two weeks.</p></details>
+        <details><summary>Is there a contract? How do I cancel?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>No. Pay monthly or yearly, no contract, no setup fee. To cancel, email <a href="mailto:support@rotely.co" style="color:inherit">support@rotely.co</a> before billing starts. If we receive your cancellation email before billing starts and your first charge still goes through, we’ll refund that charge in full. You keep using it through the month you've paid for. We don't refund part of a month. If you pay for a year, you keep Rotely through that year. We don't refund part of a year. Texting STOP only stops the texts. Your data is yours. Download it any time, and for 30 days after you leave, ask and we'll send you a copy. Your first count does not start billing. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</p></details>
         <details><summary>Who sends the orders?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>You approve every one. Rotely drafts the order; nothing goes to a supplier until you sign off.</p></details>
         <details><summary>Is my data private?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>Only your team and Rotely see your bar's numbers. A few service providers help run Rotely, listed in our Privacy Policy, and we never sell your data.</p></details>
         <details><summary>I already use inventory software. Do I start over?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>No. Send us an export from what you use now and we'll bring your products and pars over. Rotely picks up from there.</p></details>
         <details><summary>What is the best liquor inventory app for a small bar?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>Rotely is liquor inventory software for independent bars. Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different.</p></details>
-        <details><summary>What does Rotely cost for one bar?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>Rotely is $99 a month plus tax with the holiday deal, regular $149. No setup fee. Sign up by Dec 31, 2026 and you keep this price. Or pay yearly: $999 a year, 44% off the regular $1,788. Free until your first full count, up to two weeks.</p></details>
+        <details><summary>What does Rotely cost for one bar?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax. The annual deal is 44% off the regular $1,788 a year, plus tax. No setup fee. Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</p></details>
         <details><summary>Do my staff still have to count bottles?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>Yes. Check the starting quantities against your shelves on the first count, even when Rotely provides an estimate. On later counts, staff still check the bottles and correct anything that does not match. Rotely does not eliminate the physical count.</p></details>
         <details><summary>Does Rotely work with my distributor's invoices?<span class="pm" aria-hidden="true"><svg><use href="#i-chev"/></svg></span></summary><p>You can send an invoice photo or forward the invoice email. Rotely reads the invoice lines and uses them with daily register sales to prepare your count and draft orders for your approval.</p></details>
       </div>
@@ -1254,8 +1323,8 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
       <div>
         <h2 id="tg-h" class="tagline closer">Save your time and money&nbsp;now<span class="dot">.</span></h2>
         <p>Send a few invoices and your register's daily sales report. We set it up for you. Check your starting stock on the first count, then use Rotely to track changes.</p>
-        <a class="btn btn-go" href="#setup">Set up my bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        <p class="closer-note">Free until your first full count, <span class="upto">up to two weeks.</span> Pay monthly or yearly. Email us to cancel, and you keep it through the time you've paid for.</p>
+        <a class="btn btn-go" href="#setup">Start my free month <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <p class="closer-note">Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts. Pay monthly or yearly. You keep access through the time you've paid for.</p>
       </div>
     </div>
   </section>
@@ -1271,7 +1340,7 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
   <div class="fbase"><span>&copy; 2026 Rotely LLC &middot; Texas &middot; <a href="https://toolradar.com/tools/rotely" rel="noopener">Listed on Toolradar</a></span><span><a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/sms">How Rotely texts work</a></span></div>
 </div></footer>
 
-<div class="sticky" id="sticky" aria-hidden="true"><a class="btn btn-go" href="#setup" tabindex="-1">Set up my bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+<div class="sticky" id="sticky" aria-hidden="true"><a class="btn btn-go" href="#setup" tabindex="-1">Start my free month <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
 
 <script>
 (function () {
@@ -1281,11 +1350,24 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
   var sum = document.getElementById('errsum');
   var list = document.getElementById('errlist');
   var btn = document.getElementById('setup-go');
+  document.querySelectorAll('a[href="#setup"]').forEach(function (link) {
+    link.addEventListener('click', function (event) {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      requestAnimationFrame(function () { form.focus({ preventScroll: true }); });
+    });
+  });
   var sent = false;
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted) { sent = false; btn.disabled = false; btn.removeAttribute('aria-disabled'); }
+  });
   var rules = {
-    name: function (v) { return v.trim() ? '' : 'Add your name.'; },
     bar: function (v) { return v.trim() ? '' : 'Add your bar\'s name.'; },
-    phone: function (v) { return v.replace(/\D/g, '').length >= 10 ? '' : 'Add a mobile number with area code.'; },
+    name: function (v) { return v.trim() ? '' : 'Add your name.'; },
+    phone: function (v) {
+      var spoken = v.trim(), digits = spoken.replace(/\D/g, '');
+      var local = /^[1]?[0-9]{10}$/.test(digits) && (spoken[0] !== '+' || digits.length === 11);
+      return /^[+()0-9\s.\-]+$/.test(spoken) && local ? '' : "That doesn't look like a cell number. Put in all 10 digits. Example: (325) 555-0123.";
+    },
     email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Add an email like name@yourbar.com.'; }
   };
   function check(k) {
@@ -1380,7 +1462,7 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
 #rc-ask .rc-foot a{color:inherit}
 @media (prefers-reduced-motion:reduce){#rc-ask *{animation:none!important;transition:none!important}}
 </style>
-<div id="rc-ask" class="rc-wait">
+<div data-clarity-mask="true" id="rc-ask" class="rc-wait">
   <button class="rc-open" type="button" aria-label="Ask a question" aria-haspopup="dialog" aria-controls="rc-panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span class="rc-lbl">Ask a question</span></button>
   <section class="rc-panel" id="rc-panel" role="dialog" aria-label="Ask a question about Rotely">
     <div class="rc-head"><div><p class="rc-title">Ask about Rotely</p><p class="rc-sub">Instant answers from Rotely's assistant. If it can't help, we'll get back to you within one business day.</p></div><button class="rc-x" type="button" aria-label="Close">×</button></div>
@@ -1426,7 +1508,74 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
 </script>
 <!-- /ask widget -->
 <script>window.ROTELY_ADS = {google: "AW-18549067972", meta: "1836378017394682", ms: ""};</script>
-<script src="/ads.js" defer></script>
-<script src="/traffic.js" defer></script>
+<script>
+(function () {
+  // Read-only handoff. The production collector still owns attribution storage and measurement.
+  var fields = ['utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+  var clicks = ['gclid', 'gbraid', 'wbraid', 'fbclid', 'msclkid'];
+  function valid(value, pattern) { return typeof value === 'string' && pattern.test(value); }
+  function stored(key) { try { return localStorage.getItem(key) || ''; } catch (error) { return ''; } }
+  function sampleQuery() {
+    var result = new URLSearchParams();
+    if (window.rotelyMayMeasurePage !== true) return result;
+    var form = document.getElementById('setup-form');
+    var incoming = new URLSearchParams(location.search);
+    var internal = incoming.has('internal') ? incoming.get('internal') === '1' : stored('rotely_internal') === '1';
+    var source = (!internal && (form.elements.src.value || stored('rotely_src'))) || incoming.get('utm_source') || '';
+    if (!internal && !source && document.referrer) {
+      var host = new URL(document.referrer).hostname;
+      if (host && !/(^|\.)rotely\.co$/.test(host)) source = 'ref:' + host;
+    }
+    source = source.slice(0, 80).toLowerCase().replace(/[^a-z0-9._:-]/g, '');
+    if (source) result.set('utm_source', source);
+    // The form contains the collector's selected bundle after it loads. On an early tap or
+    // an internal QA visit, use the same pre-load selection the existing /start handoff used.
+    var selected = {}, old = {}, fresh = {};
+    var populated = !internal && (form.elements.src.value || form.elements.click_id.value || fields.some(function (key) { return form.elements[key].value; }));
+    if (populated) {
+      fields.concat(['click_type', 'click_id']).forEach(function (key) { selected[key] = form.elements[key].value; });
+    } else {
+      try { old = internal ? {} : JSON.parse(stored('rotely_clk')) || {}; } catch (error) { old = {}; }
+      clicks.forEach(function (key) { var id = incoming.get(key); if (valid(id, /^[a-z0-9._-]{1,200}$/i)) { fresh.click_type = key; fresh.click_id = id; } });
+      fields.forEach(function (key) {
+        var value = (incoming.get(key) || '').toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 40);
+        if (value) fresh[key] = value;
+      });
+      selected = (fresh.click_id ? fresh.click_id !== old.click_id : Object.keys(fresh).length && !old.click_id && !old.utm_campaign) ? fresh : old;
+    }
+    fields.forEach(function (key) { if (valid(selected[key], /^[a-z0-9._-]{1,40}$/i)) result.set(key, selected[key].toLowerCase()); });
+    if (clicks.indexOf(selected.click_type) !== -1 && valid(selected.click_id, /^[a-z0-9._-]{1,200}$/i)) result.set(selected.click_type, selected.click_id);
+    return result;
+  }
+  function updateLinks() {
+    var query = sampleQuery();
+    document.querySelectorAll('a[href^="https://app.rotely.co/demo"]').forEach(function (link) {
+      var target = new URL(link.href);
+      if (target.origin !== 'https://app.rotely.co' || target.pathname !== '/demo') return;
+      target.search = query.toString();
+      target.searchParams.set('rotely_cta', link.closest('footer') ? 'footer_demo' : 'home_demo');
+      link.href = target.href;
+    });
+  }
+  updateLinks();
+  document.addEventListener('rotely-acquisition-ready', updateLinks);
+  document.addEventListener('DOMContentLoaded', function () { queueMicrotask(updateLinks); });
+  document.addEventListener('click', function (event) {
+    if (event.target.closest('a[href^="https://app.rotely.co/demo"]')) updateLinks();
+  }, true);
+})();
+</script>
+<script>
+(function () {
+  if (window.rotelyMayMeasurePage !== true) return;
+  ['/ads.js', '/traffic.js'].forEach(function (src) {
+    var script = document.createElement('script');
+    script.async = false;
+    script.src = src;
+    if (src === '/traffic.js') script.addEventListener('load', function () { document.dispatchEvent(new Event('rotely-acquisition-ready')); });
+    document.head.appendChild(script);
+  });
+})();
+</script>
 <script id="rc-wait-js">(function(){var a=document.getElementById("rc-ask");if(!a)return;function f(){if(window.scrollY>window.innerHeight*0.6){a.classList.remove("rc-wait");window.removeEventListener("scroll",f)}}window.addEventListener("scroll",f,{passive:true});f();})();</script>
 </body></html>

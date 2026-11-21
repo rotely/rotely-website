@@ -1,17 +1,85 @@
 <!doctype html><html lang="en"><head><meta charset=utf8>
+<meta name="referrer" content="strict-origin">
+<script>
+// The marketing pages never redeem setup or payment tokens. Keep private returns out of tracking.
+(function () {
+  var url = new URL(location.href), current = new URL(url), share = true;
+  var tag = /^(?:utm_(?:source|medium|campaign|term|content|id|source_platform|creative_format|marketing_tactic)|gclid|gbraid|wbraid|fbclid|msclkid|gad_source|gad_campaignid|internal)$/;
+  var privateKey = /(?:token|session|secret|code|setup.link|phone|email|customer|payment|intent|card|password|name|mobile|address)/i;
+  var privateValue = /(?:@|^cs_(?:test|live)_|^seti_|^pi_|^sk_(?:test|live)_)/i;
+  var publicSections = ['', '#top', '#main', '#how', '#setup', '#price', '#compare', '#faq'];
+  function numberLike(value) {
+    return /^[0-9().+\s-]+$/.test(value) && /^\d{10,19}$/.test(value.replace(/[^0-9]/g, ''));
+  }
+  for (var key of new Set(url.searchParams.keys())) {
+    var values = url.searchParams.getAll(key);
+    var privateNumber = /^utm_/.test(key) && values.some(numberLike);
+    if (privateNumber || !tag.test(key) || values.length !== 1 || !/^[a-z0-9._:-]{1,200}$/i.test(values[0]) || values.some(function (value) { return privateValue.test(value); })) {
+      if (privateNumber || privateKey.test(key) || values.some(function (value) { return privateValue.test(value); })) current.searchParams.delete(key);
+      share = false;
+    }
+  }
+  if (publicSections.indexOf(url.hash) === -1) {
+    if (/[=?@]|(?:token|session|secret|cs_(?:test|live)_|seti_|pi_)/i.test(url.hash)) current.hash = '';
+    share = false;
+  }
+  // Restrict referrer strings that the unchanged shared collector can send to public routes
+  // in this site's sitemap. URL-shaped passwords, nested paths and ambiguous tags stay private.
+  var publicPages = new Set(['/', '/index', '/start', '/about', '/build', '/news', '/tools',
+    '/terms', '/privacy', '/sms', '/bar-inventory-count-sheet', '/bar-inventory-software-austin',
+    '/bar-inventory-software-san-angelo', '/bar-inventory-spreadsheet-vs-app', '/bar-inventory-without-pos-integration',
+    '/liquor-cost-calculator', '/liquor-invoice-price-tracking', '/par-level-calculator',
+    '/pour-cost-calculator', '/weekly-bar-inventory-checklist']);
+  var fields = /^(?:utm_(?:source|medium|campaign|term|content)|gclid|gbraid|wbraid|fbclid|msclkid)$/;
+  var privateGuideValue = /(?:@|(?:^|[-._:])(?:cs_(?:test|live)_|(?:sk|pk|rk)_(?:test|live)_|(?:seti|pi|pm|cus|sub|tok)_|(?:access|refresh|session)[_-]?token|(?:client[_-]?)?secret|bearer[-._:]|gh[pousr]_|AKIA[A-Z0-9]|eyJ[a-z0-9_-]{6,}\.))/i;
+  function safeGuideTag(key, values) {
+    if (!tag.test(key) || key === 'internal' || values.length !== 1 || privateGuideValue.test(values[0])) return false;
+    var value = values[0];
+    if (/^(?:gad_source|gad_campaignid)$/.test(key)) return /^[0-9]{1,24}$/.test(value);
+    if (/^(?:gclid|gbraid|wbraid|fbclid|msclkid)$/.test(key)) return /^[a-z0-9._-]{1,200}$/i.test(value);
+    return /^[a-z0-9][a-z0-9._:-]{0,199}$/i.test(value) && !numberLike(value);
+  }
+  var guide = null;
+  if (document.referrer) {
+    var ref = new URL(document.referrer);
+    if (ref.username || ref.password || ref.hash || ['checkout.stripe.com', 'billing.stripe.com'].includes(ref.hostname)) share = false;
+    else if (ref.origin === url.origin) {
+      if (!publicPages.has(ref.pathname.replace(/\.html$/, ''))) share = false;
+      else if (Array.from(ref.searchParams.keys()).every(function (k) { return safeGuideTag(k, ref.searchParams.getAll(k)); })) guide = ref;
+      else share = false;
+    } else if (!/^https?:$/.test(ref.protocol) || ref.search || (ref.pathname !== '/' && !(ref.origin === 'https://app.rotely.co' && ref.pathname === '/demo'))) share = false;
+  }
+  var savedSource = '', savedClick = {}, internal = current.searchParams.get('internal') === '1';
+  try {
+    savedSource = localStorage.getItem('rotely_src') || '';
+    savedClick = JSON.parse(localStorage.getItem('rotely_clk') || '{}') || {};
+    if (!current.searchParams.has('internal')) internal = localStorage.getItem('rotely_internal') === '1';
+    if (privateValue.test(savedSource) || Object.values(savedClick).some(function (v) { return typeof v === 'string' && privateValue.test(v); })) share = false;
+  } catch (error) { /* The verified guide can still identify the visit if no selection was retained. */ }
+  // The guide usually populated the collector's storage itself. Recover only if neither a
+  // current campaign nor a saved selection exists. Never replace a newer stored click.
+  if (share && guide && !internal && !savedSource && !Object.keys(savedClick).length &&
+      !Array.from(current.searchParams.keys()).some(function (k) { return fields.test(k); })) {
+    guide.searchParams.forEach(function (v, k) { if (fields.test(k)) current.searchParams.set(k, v); });
+  }
+  if (current.href !== url.href) history.replaceState(history.state, '', current.href);
+  window.rotelyMayMeasurePage = share;
+})();
+</script>
+
 <meta name="msvalidate.01" content="986710BC2685E41D26140B2816E31B0B"><meta name="p:domain_verify" content="eab4a82215b88de4ae2df0a710c81897"/><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Rotely: stop counting the bar from zero</title>
-<meta name="description" content="Check your starting stock, then track changes with invoices and sales. We set it up for you. Free until your first full count, up to two weeks.">
+<meta name="description" content="Check starting stock, then track changes with invoices and sales. We set it up for you. Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.">
 <link rel="canonical" href="https://rotely.co/start">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Rotely: stop counting the bar from zero", "url": "https://rotely.co/start"}</script>
 <meta property="og:site_name" content="Rotely">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rotely.co/start">
-<meta property="og:title" content="Rotely: bar inventory and ordering for independent bars">
-<meta property="og:description" content="At our first bar, Rotely can save over $16,800 a year in money and time, by our estimate. Check starting stock on the first count; track changes after that. We set it up for you. Holiday deal: $99 a month, regular $149, plus tax. Or $999 a year. Free until your first full count, up to two weeks.">
+<meta property="og:title" content="Rotely: liquor inventory software for independent bars">
+<meta property="og:description" content="Liquor inventory software for independent bars. Automate what you hate. Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.">
 <meta property="og:image" content="https://rotely.co/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Rotely: bar inventory and ordering. Automate what you hate.">
+<meta property="og:image:alt" content="Rotely: liquor inventory software for independent bars. Automate what you hate.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icon-32.png">
@@ -558,7 +626,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
       <img class="wm wm-dark" src="data:image/png;base64,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" width="112" height="42" alt="Rotely">
       <img class="wm wm-rev" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAABsCAMAAAAsV5thAAAAwFBMVEUVr5jc39j4s7Maw5TU1LcA/38gxJbv7ecAf38f3KL/f38A/wD//wAXvI649LgWpnxN0ar/AADp595mqKgAAP8SvI0Uvo9qalW/f3+jo5H/AP8/fz8W0Jx/AH+/v/+/////qv8AAADv7OX+/v349O718uwSvo4Uw5P18+z18+318+318+3u5+j28+3t6uXy7uja2dm/v7/u6+b//7Cqqqrx7efz2dnm5tN/f38A/////9jo5NzLy8vx7ef//38XxJQC5J8GAAAAQHRSTlMRDgStCQJmkQIPAgEBVAUQEgFIBQGe1AQEBwEE/wIEBAMA/QP60v38ME9urhCOLNIKBE0DA2wLDwIBBigIrALRMxJ/lAAADiZJREFUeNrtnQl/2rgSwIHcV7tt936nGDnYli+OACEk/f7faiXZgGSNDoek7y1Bv25gg43sv0ejuaT0yAG2qsqybLHg/4mXp371jn31Do4ekH8xOhwOaf1DtKjivz1AgADvA3Ac0YacbPz9AQJ8AYD3ksAqEsK3azTqHxRA2LDLCngXgKdtgHRxMAA38G6LyQWj0W/vAnBhADyUIVzDO32aXJRSSUVr8uUdAGYHC5CQQZE+S3i1bvr0DjeGATyQIVxN8og28GqA6yPALjdWKPB+KMAIDgTgcDg8AnxTgKc/aAgfCkD6P5JAmh2qBC6OAP8eAA9kCMcGwOwIcD+A83cBODdm4exAAZaLHwPwYCWwfB8JrP6fAMISwBW6g/qApT+6t7cEQt2uPV1xWD8YIGhtAOoVO89d6gdo52L3burAhdb1DJzszKBYN4DQaqFPzH1GzxN7mj8VcRzDzPIxmWUZ/zwusuxnL3PTjFkGSp58XWWF7Gpxql7AHrMwvI0EnvaLQl5ZXIh/Sby9vHmSs1JeQBTrvdX3lCUpiyIZIeCHRCxNAL8xkF8fp22ANInVVmAR6rqnIs1ZNGxSHBHLk0J8NOgggavraVWd9rN+tqhOT6uFN1UHnMx6ve73T8eDarHuj//47Q8UYF9NwPDGmoeTqbGnQgMo3scpa3I2m6uUJ6ecf0tepUioh6q3pjXTNxb4sgmLtNPrY9MCl0IcIImjdmNO4+aFPLSOL6ML5IQeeWqPK3ldkGo3rALk78YJw3jIe2Nx68bMMWVpZvpR4EsjtCvRU4IhtAzhzUNUWkqcmnRonDAJBsifl34NyhDmb5KI2ok0CNVrWUTDMIC6WSOeY07tXTUIgySwIik1ulvZCQJ5MI4vZ4ACbPXGBL/2VW8BwjUpGHULFL+xQhEN846sALX041Q+KU9PObSF0CKBkBlXTRNiNxvWpXH4A3Y4BpAkRl8bgPxnSv00xPDY9tYBYKZpinnu74pGSYsgIoGRpJwbRNjyxSqAE+NoipoYGMDYfFYNQH4hjIYNx52K7gBwoWqKOOgsLoSfWjMcOgtzM9T4OlqQmQ2gcZ8WldlrhzkpGzOsJ6gjUmEoJI1iK7WvAAjIMLA+q0q1P60AMRG0jGGhxIxuslCAKWJuSAlEdKNTNOL6+XaYhWEntUmHnhgEAUSgxOQaBxgM2wQYYVOmANiNX01Q9HkdDjDbCm3cqSdGBn6AAKHDEr6AbRD6AeItljZFJ361RC2FSdoVYPCg356ZiznbqnIbgKZU83kft8UTZMIBsifA0PlD06czceEdZ2FHV7ZHqFgkOEBRDfZiPkjUkuGHRsEmTzDAlakWgiSjE8BVM1fluOuxrfjD1AWAdwgjxjTDXHfEholWsCdAm1Z33FUz+8ixH+QL1wFWVAHWfnYsrJEUcyN3Ot4BEMBqoOkAn8OMaNQORG6vfr4R7vtGLH9I09zmG0fiwWc5k834mOWy1Z/mLP2vZQDx70lV5zBFjkisVhNthjBqyeSIL2jIFB1Cd4Ai4JEUvNciTvKYpOjAyeOt6klQD0/Mc5tDYiOxPkNNCLMr4bERNbAJiJnxn2vwSaAp20jZB455ao0H4kNYOOqafY/BEVEDMt1GazHXgU8MUD/9CkyAGUyhOV++2jR42sInPUpUW3iGcIAlg15AbA0UWwAKF1NELGWgHWCFSQVNlOC6fAOI8pcXiD9+NN04RkyIxIhawdS4IqEFwRGRBpslYwQj0oBxrgLEbftNWLR+cIgBsHniWtoC4VzC7RdCggGaXih/BGssUJ3jEQ93TuRnhjyemS6AZchM45RA2grWYo4V73eN3FVKcTdQfBZSmQCGsqjnoQBjrRmMrqwcKoLMd6+oreMCKIpxpj61ijpBYD0SggG2r99mwg7aD6sh4UxrAswjt3xhcZiEdASYGHo1ChMLgpha9X2hAJG8sPEEbD2JyQut4LDEA+1jRNNw5giQc10ngMYlm7dufyimCO78AFMHzk0TwhyYIlk9Ntp6BTOGxc09ACEzBQbUMGQaGHFwAEz5VKiPyyRQAMXBMTqJBgM0DsrsF98ew4kXoE8dwa0xXdKhSwA5QPOGC/LiUWyOed00taQtjetAYwibRgxNuaOTPjSN/0/zIn73jGpbd2kHakxX8DobBpVA0zAyfUNXOsY00C66SKB5A46G3SqQlbMyATOmt24gZkQXPoA+twWx3x2GETLemRXgIsCN6hRX9UsgcVkyfisnRAJTMmgJYJd6MYQTC/dEBnsCDKmNgQq1ZOprZF2M6BCA8lvNhRf2urQXhNO1dIfND8rMlEC2B0BZrOQtb8P1nHTJvyD68Rt4ioueTP02bjloJsDKIYGmKzEloRKIhOK6pRDswQSnrboJ+uedjGiLBCaaxu0qgfxozOb5MRIYBNBmyYhoyDAsadIN4BIxrOZvogPL+dtKoIzH2Eo7nFlfPqauobMRbQU40AoBEdX6RrMwJoF7zsLogGnPeZahiniswz68kH0ksHHPO9iBY9MOzMNn4Wk3O1A3CjcAwbfMARNBhkZqLrxlrD6AFv/W4Ymg8bxwCUSq0IJbbgMIRt0hw4LOLMCIfjw7O7t8dLlyGMDU562ohecdfGED4MyUghiyFT97PgdYVZV418R4gf+634dVBvUU2l81kxUO0Bf0yxGxfG5d3+NVg+6sd9MB4Bj5aluSACzJChygYY+/mEaQw47YJBQA/tSqMrEhLHMpu4Oq0rBkVrnHiL4RFflXVz3eduX5YRKYDWmYg4Mp4qiCDjkR4+6Zkk+6NpYd1G+WylIVW31gq+wYmXCNKy8/wa0ifpze+cloNLof/Xpy3iM3j6E6kA+s0CitJZoRbMZg+hYR9uYLkzzmc+RYX8RhB6hlcLKAMlHVpSBn5Nv5SODjjb98Pyfk0uaJ+OPsXOKxIAWaPImblBiiCMyc7Bg1Iy1rYDioOuGuwnEA1DB77SVaVsrXXpKrk39u8YkfJz1BMEgCERNdjr++kRFBSvAaRYcCNIRLpFBL6s1q7vwubr3IBPaODRLOQgF6C+jogxKWevz5p++jXZMcv/f4sA4CiD4vufpGczHR+pmtLY85Srqdv8QLSdsJ1A2/jbKgehGAdRJpE2S+AnZVQ1/OTkYtgPejk39cBgPEkp80VQsuCJ5Xp7JGsJ6KSkdmAGQeGh/pIoU/bS2A0JStGMoxuAE2n7m0TVt3DxRr73xkALwfnZNeGED+mwuK1i/sDo3TCK+NmTpCwfl2QhDf0OhKZqmNERGnW8vDonRz3QGeiCXV2Daid+L6SK6+I/xG959JKEAobMuF8jRJkjS3rCdSUoKoHmCxUpyUWiYbWZ2lJpeQ8qytURniiQSIoGZEX2ECKGaSu1CA3JJ5eFV9YOLMGMoipjxtyuOkg4hG5WStWJ7EsJpmtgLBlDjtQEQmnJXH2hKIS3JiyJ9k+EuYGYPb7oEVqsQz8e34i1pxsrFP0OOEw0s9oo4ALNEMBPpAd+eM1VM+fd+w0/iNfv2MSuDUEufrXCMdwdI1PWL5G7yGSoE49Ih6OMA/IXLZMKD4II0Nc99q3JIJBtht6QZqbOMzkcp7rJp4rxR1ZNOJ0rbg2toNLdVINAeI8JPi+DlUB+ILGL2uEHiNIWy27LwiQK2fwgDii4yw1V+YAG4lsAVQOHRdALqVBnIRk64Bey6xS/IKgpStnABtu7fZRbDtqH4zAUqZRIfwxFl1ELxWDvkeizGEXDb3x8IJ6uWMnQBaRLDtf5/Vs/C9oQNPSLgO7LYE0NhmwbYCwxJ/A/IpVA/SfK4nIcI33oEX/DG1BXDjiBhj+M6XVDILKL3LretLztG8HaycelSzGgMfllyavAzZ9iR8YqRla13XzU0PUYJ8Ev58Yyz5F0N46tqB5HfvMKayRB1V2y9TlxZoZVRJzAK6io0F1/1wgLgxrQcC6zF8jlkxd+QMMaQnzkwU/6xwriQXuzlk9l1dXILVis74dmeQXVVI/Dx8C1DcO0Ky6WdwYg7hX2Q4qyNAeV+xbS8I6ZBlzj1trFqAn/rQ3p6GVKkVoaUrZHlyad3gRHg9vudYWzKXMpygzyC9sxpgwOYe5mYuzbYxbZ+MCaffXQ0hBIuZ5w7LvBgjx1YJM31tR1dyCLda5jAszFTSMCPmlkqX5KcT3Y07EfFUDnD8dTKZfJ18/SpeRQvY9rvO5yS5fqVRPslIwB9pEAcUKVNPHj4/FGtrT/0kZ60tei7SwtoVJO22JrfhEmjJpl9ucyK1BXgn00yv3v6uCeHNi0mSipZMnuaE+Dcsa2I74qAq3pybFBWx46h/ncX8YLEyMU0ncXYa3JXnNrCFLcUt+sWPN6R33kRlRFbussnKkdl0JttgOhiIVwhnCOi9hrQlFqQP70lsu+d6PnqbOq4i8mbTd8bMlQDWu7vT88L7PUF1reC7nqsRWb7RdoC4ANpV2OPV5k3vkbwJwL93Q2vKn91D8PGsJyZfxUn5wG2KCeCk276CHxkgtg8JLVfd1EPvw0HbyR8gER9vTfSHl0ClNAmJOSqLlo4AsbZQ416MBnlxR4BqAFXs9BpnYvcULCIicnvkCNABcFI7gmVk2aVlQo4AnWZLExC3lQGwf3e20D8UwLEno+BbF3ccwu7EbPcZ5OMBdOVlabSGI8B9ABav2Rz+gwF0pEpfMQN/QID24hz60M7EHQEiAJ/DimGOANH2hZCSBtehHAEiAvg7DnC35/URoBvgoMS3kdzj7w9/LICfSnO3BJoX+/xxm48VzoI4L/UV3AGFAEeAWquKycVzVA6HZfR8MXki++H7cAAbWMusWp/O1N8cAYYj3Gbp4S1qG/4Cy4jsJrbDg+cAAAAASUVORK5CYII=" width="112" height="38" alt="Rotely">
     </a>
-    <nav class="nav" aria-label="Main"><a class="si si-demo" href="https://app.rotely.co/demo?utm_source=site&amp;utm_medium=web&amp;utm_campaign=start&amp;utm_content=start_demo" data-qv="1">Sample bar</a><a class="btn btn-go" href="#setup">Start free</a></nav>
+    <nav class="nav" aria-label="Main"><a class="si si-demo" href="https://app.rotely.co/demo" data-qv="1">Sample bar</a><a class="btn btn-go" href="#setup">Start my free month</a></nav>
   </div>
 </header>
 <style>
@@ -585,6 +653,8 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .st-ref { margin: 0 0 16px; }
 .st-ref summary { cursor: pointer; font-size: .875rem; text-decoration: underline; text-underline-offset: 3px; min-height: 44px; display: flex; align-items: center; }
 .st-ref .field { margin-top: 4px; }
+#setup-form .signup-offer { margin: 0 0 .75rem; padding: .75rem .875rem; background: var(--bg); border-left: 3px solid var(--green); color: var(--text); font-size: .9375rem; line-height: 1.45; }
+#setup { scroll-margin-block-start: calc(4.75rem + env(safe-area-inset-top, 0px)); }
 #setup-form .consent { margin-top: 16px; }
 @media (max-width: 719px) {
   .st-hero .wrap { padding-top: 20px; gap: 16px; }
@@ -600,7 +670,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .st-look { display: block; text-align: center; margin: 14px 0 2px; padding: 12px 0; min-height: 44px; font-weight: 600; font-size: 15px; color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 719px) {
   .st-hero .st-sub { display: block; font-size: 1rem; line-height: 1.45; margin: 0 0 12px; }
-  .st-hero .st-checks li:nth-child(3) { display: grid; }
+  .st-hero .st-checks li:nth-child(3), .st-hero .st-checks li:nth-child(4) { display: grid; }
   .st-hero #st-look { margin: 0 0 14px; padding: 8px 0; }
 }
 .st-blocks .wrap { max-width: 34rem; display: grid; gap: 28px; padding-top: 0; padding-bottom: 0; }
@@ -627,15 +697,15 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         <p class="st-sub" id="st-sub">Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different.</p>
         <ul class="st-checks">
           <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>We set it up for you.</span></li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>No card to start.</span></li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Free until your first full count, up to two weeks.</span></li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Holiday deal: $99 a month, locked in for as long as you stay subscribed. Regular $149, plus tax.</span></li>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>First month free.</strong></span></li>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</span></li>
+          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax.</span></li>
           <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>At our first bar, Rotely can save over $16,800 a year in money and time, by our estimate.</span></li>
         </ul>
       </div>
-      <div class="card" id="form-card"><span id="setup" aria-hidden="true"></span>
-        <a class="st-look" id="st-look" href="https://app.rotely.co/demo?utm_source=site&amp;utm_medium=web&amp;utm_campaign=start&amp;utm_content=start_demo" data-qv="1">Rather look first? Open the sample bar</a>
-        <form id="setup-form" name="setup" method="POST" action="https://app.rotely.co/signup" novalidate>
+      <div class="card" id="form-card">
+        <a class="st-look" id="st-look" href="https://app.rotely.co/demo" data-qv="1">Rather look first? Open the sample bar</a>
+        <form id="setup-form" name="setup" method="POST" action="https://app.rotely.co/signup" novalidate tabindex="-1" aria-label="Bar signup" data-clarity-mask="true">
 <input type="hidden" name="src" value="">
 <input type="hidden" name="utm_medium" value="">
 <input type="hidden" name="utm_campaign" value="">
@@ -648,7 +718,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
             <b>Please fix <span id="errcount">these</span> to continue:</b>
             <ul id="errlist"></ul>
           </div>
-          <div class="field"><label for="f-bar">Bar name</label><input id="f-bar" name="bar" type="text" placeholder="Main Street Tap" autocomplete="organization" autocapitalize="words" required aria-describedby="e-bar"><span class="err" id="e-bar"></span></div>
+          <div class="field" id="setup"><label for="f-bar">Bar name</label><input id="f-bar" name="bar" type="text" placeholder="Main Street Tap" autocomplete="organization" autocapitalize="words" required aria-describedby="e-bar"><span class="err" id="e-bar"></span></div>
           <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" type="text" placeholder="Maria Lopez" autocomplete="name" autocapitalize="words" required aria-describedby="e-name"><span class="err" id="e-name"></span></div>
           <div class="field"><label for="f-phone">Mobile number <span class="hint">We text you a code to sign in. No password.</span></label><input id="f-phone" name="phone" type="tel" placeholder="(325) 555-0142" autocomplete="tel" inputmode="tel" required aria-describedby="e-phone" data-clarity-mask="true"><span class="err" id="e-phone"></span></div>
           <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" placeholder="maria@example.com" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required aria-describedby="e-email"><span class="err" id="e-email"></span></div>
@@ -656,9 +726,10 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
           <details class="st-ref"><summary>Someone sent you?</summary>
             <div class="field"><label for="f-ref">Who told you about Rotely? <span class="opt">Optional. If someone sent you, Rotely pays them for it.</span></label><input id="f-ref" name="referred_by" type="text" maxlength="80" placeholder="Example: Mike at Joe's Bar" autocomplete="off"></div>
           </details>
-          <button class="btn btn-go" type="submit" id="setup-go">Start free <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <p class="signup-offer" id="signup-offer">You won't be charged today. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts. First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. To cancel, email <a href="mailto:support@rotely.co">support@rotely.co</a> before billing starts. If we receive your cancellation email before billing starts and your first charge still goes through, we’ll refund that charge in full.</p>
+          <button class="btn btn-go" type="submit" id="setup-go" aria-describedby="signup-offer">Continue to secure checkout <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
           <p class="legal">See our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
-          <p class="fine">Free until your first full count, up to two weeks. Holiday deal: $99 a month, locked in for as long as you stay subscribed. Sign up by Dec 31. Regular $149, plus tax.</p>
+          <p class="fine">First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax. Your first charge covers one month or one year, depending on the plan you choose.</p>
           <label class="consent" for="f-sms">
             <input id="f-sms" name="sms_consent" type="checkbox" value="yes">
             <span><b>Optional.</b> Text me at this mobile number from Rotely about my account, including counts, weekly summaries and order drafts. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase.</span>
@@ -696,8 +767,8 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         </ol>
       </div>
       <p class="st-proof">Rotely can save one bar over $16,800 a year by our estimate: about $9,500 in money and 490 hours of work. The money alone is over 5 times the regular price.</p>
-      <p class="st-cancel">Month to month. Cancel any time by emailing support@rotely.co.</p>
-      <a class="btn btn-go st-again" href="#top">Start free <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <p class="st-cancel">Pay monthly or yearly. To cancel, email <a href="mailto:support@rotely.co">support@rotely.co</a> before billing starts. Your first inventory count does not start billing.</p>
+      <a class="btn btn-go st-again" href="#setup">Start my free month <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
   </section>
 </main>
@@ -719,11 +790,24 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
   var sum = document.getElementById('errsum');
   var list = document.getElementById('errlist');
   var btn = document.getElementById('setup-go');
+  document.querySelectorAll('a[href="#setup"]').forEach(function (link) {
+    link.addEventListener('click', function (event) {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      requestAnimationFrame(function () { form.focus({ preventScroll: true }); });
+    });
+  });
   var sent = false;
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted) { sent = false; btn.disabled = false; btn.removeAttribute('aria-disabled'); }
+  });
   var rules = {
-    name: function (v) { return v.trim() ? '' : 'Add your name.'; },
     bar: function (v) { return v.trim() ? '' : 'Add your bar\'s name.'; },
-    phone: function (v) { return v.replace(/\D/g, '').length >= 10 ? '' : 'Add a mobile number with area code.'; },
+    name: function (v) { return v.trim() ? '' : 'Add your name.'; },
+    phone: function (v) {
+      var spoken = v.trim(), digits = spoken.replace(/\D/g, '');
+      var local = /^[1]?[0-9]{10}$/.test(digits) && (spoken[0] !== '+' || digits.length === 11);
+      return /^[+()0-9\s.\-]+$/.test(spoken) && local ? '' : "That doesn't look like a cell number. Put in all 10 digits. Example: (325) 555-0123.";
+    },
     email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Add an email like name@yourbar.com.'; }
   };
   function check(k) {
@@ -771,54 +855,77 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
     document.getElementById('st-h').textContent = 'Send invoices. Check your starting stock';
     document.getElementById('st-sub').textContent = "Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different.";
   }
-  // Read the effective acquisition before deferred traffic.js writes it.
-  var read = function (k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
-  var clean = function (v, source) {
-    if (typeof v !== 'string') return '';
-    return v.toLowerCase().replace(source ? /[^a-z0-9._:-]/g : /[^a-z0-9._-]/g, '').slice(0, source ? 80 : 40);
-  };
-  var source = read('rotely_src') || p.get('utm_source') || '', host = '';
-  if (!source) {
-    try { host = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
-    if (host && !/(^|\.)rotely\.co$/.test(host)) source = 'ref:' + host;
-  }
-  var old = {}, fresh = {}, hasTags = false;
-  var kinds = ['gclid', 'gbraid', 'wbraid', 'fbclid', 'msclkid'];
-  var fields = ['utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-  try {
-    old = JSON.parse(read('rotely_clk')) || {};
-    if (typeof old !== 'object' || Array.isArray(old)) old = {};
-  } catch (e) {}
-  kinds.forEach(function (k) {
-    var v = p.get(k) || '';
-    if (/^[A-Za-z0-9._-]{1,200}$/.test(v)) { fresh.click_id = v; fresh.click_type = k; }
-  });
-  fields.forEach(function (k) {
-    var v = clean(p.get(k) || '', false);
-    if (v) { fresh[k] = v; hasTags = true; }
-  });
-  var selected = (fresh.click_id ? fresh.click_id != old.click_id : hasTags && !old.click_id && !old.utm_campaign) ? fresh : old;
-  source = clean(source, true);
-  document.querySelectorAll('a[href]').forEach(function (a) {
-    try {
-      var target = new URL(a.href, location.href);
-      if (target.origin !== 'https://app.rotely.co' || target.pathname !== '/demo' || target.username || target.password) return;
-      var href = new URL('https://app.rotely.co/demo');
-      if (source) href.searchParams.set('utm_source', source);
-      fields.forEach(function (k) {
-        var v = selected[k];
-        if (typeof v === 'string' && /^[a-z0-9._-]{1,40}$/.test(v)) href.searchParams.set(k, v);
-      });
-      if (kinds.indexOf(selected.click_type) !== -1 && typeof selected.click_id === 'string' && /^[A-Za-z0-9._-]{1,200}$/.test(selected.click_id)) {
-        href.searchParams.set(selected.click_type, selected.click_id);
-      }
-      href.searchParams.set('rotely_cta', a.closest('footer') ? 'footer_demo' : 'start_demo');
-      a.href = href.href;
-    } catch (e) {}
-  });
+
 })();
 </script>
 <script>window.ROTELY_ADS = {google: "AW-18549067972", meta: "1836378017394682", ms: ""};</script>
-<script src="/ads.js" defer></script>
-<script src="/traffic.js" defer></script>
+<script>
+(function () {
+  // Read-only handoff. The production collector still owns attribution storage and measurement.
+  var fields = ['utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+  var clicks = ['gclid', 'gbraid', 'wbraid', 'fbclid', 'msclkid'];
+  function valid(value, pattern) { return typeof value === 'string' && pattern.test(value); }
+  function stored(key) { try { return localStorage.getItem(key) || ''; } catch (error) { return ''; } }
+  function sampleQuery() {
+    var result = new URLSearchParams();
+    if (window.rotelyMayMeasurePage !== true) return result;
+    var form = document.getElementById('setup-form');
+    var incoming = new URLSearchParams(location.search);
+    var internal = incoming.has('internal') ? incoming.get('internal') === '1' : stored('rotely_internal') === '1';
+    var source = (!internal && (form.elements.src.value || stored('rotely_src'))) || incoming.get('utm_source') || '';
+    if (!internal && !source && document.referrer) {
+      var host = new URL(document.referrer).hostname;
+      if (host && !/(^|\.)rotely\.co$/.test(host)) source = 'ref:' + host;
+    }
+    source = source.slice(0, 80).toLowerCase().replace(/[^a-z0-9._:-]/g, '');
+    if (source) result.set('utm_source', source);
+    // The form contains the collector's selected bundle after it loads. On an early tap or
+    // an internal QA visit, use the same pre-load selection the existing /start handoff used.
+    var selected = {}, old = {}, fresh = {};
+    var populated = !internal && (form.elements.src.value || form.elements.click_id.value || fields.some(function (key) { return form.elements[key].value; }));
+    if (populated) {
+      fields.concat(['click_type', 'click_id']).forEach(function (key) { selected[key] = form.elements[key].value; });
+    } else {
+      try { old = internal ? {} : JSON.parse(stored('rotely_clk')) || {}; } catch (error) { old = {}; }
+      clicks.forEach(function (key) { var id = incoming.get(key); if (valid(id, /^[a-z0-9._-]{1,200}$/i)) { fresh.click_type = key; fresh.click_id = id; } });
+      fields.forEach(function (key) {
+        var value = (incoming.get(key) || '').toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 40);
+        if (value) fresh[key] = value;
+      });
+      selected = (fresh.click_id ? fresh.click_id !== old.click_id : Object.keys(fresh).length && !old.click_id && !old.utm_campaign) ? fresh : old;
+    }
+    fields.forEach(function (key) { if (valid(selected[key], /^[a-z0-9._-]{1,40}$/i)) result.set(key, selected[key].toLowerCase()); });
+    if (clicks.indexOf(selected.click_type) !== -1 && valid(selected.click_id, /^[a-z0-9._-]{1,200}$/i)) result.set(selected.click_type, selected.click_id);
+    return result;
+  }
+  function updateLinks() {
+    var query = sampleQuery();
+    document.querySelectorAll('a[href^="https://app.rotely.co/demo"]').forEach(function (link) {
+      var target = new URL(link.href);
+      if (target.origin !== 'https://app.rotely.co' || target.pathname !== '/demo') return;
+      target.search = query.toString();
+      target.searchParams.set('rotely_cta', link.closest('footer') ? 'footer_demo' : 'start_demo');
+      link.href = target.href;
+    });
+  }
+  updateLinks();
+  document.addEventListener('rotely-acquisition-ready', updateLinks);
+  document.addEventListener('DOMContentLoaded', function () { queueMicrotask(updateLinks); });
+  document.addEventListener('click', function (event) {
+    if (event.target.closest('a[href^="https://app.rotely.co/demo"]')) updateLinks();
+  }, true);
+})();
+</script>
+<script>
+(function () {
+  if (window.rotelyMayMeasurePage !== true) return;
+  ['/ads.js', '/traffic.js'].forEach(function (src) {
+    var script = document.createElement('script');
+    script.async = false;
+    script.src = src;
+    if (src === '/traffic.js') script.addEventListener('load', function () { document.dispatchEvent(new Event('rotely-acquisition-ready')); });
+    document.head.appendChild(script);
+  });
+})();
+</script>
 </body></html>
