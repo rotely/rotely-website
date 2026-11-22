@@ -222,6 +222,27 @@ a { color: inherit; }
 .terms li:first-child { color: var(--on-ink); font-weight: 700; }
 @media (max-width: 480px) { .terms { gap: 6px 18px; } .terms li.t-hw, .terms li.t-mm { display: none; } }
 
+
+/* HERO CLEANUP: compact first screen; exact existing disclosure remains in details. */
+.home-refresh .hero-offer { margin-top: 16px; color: var(--cream); font-size: .9375rem; line-height: 1.45; }
+.home-refresh .hero-offer strong { font-weight: 700; }
+.home-refresh .hero-disclosure { margin-top: 12px; max-width: 36rem; color: var(--on-ink-2); }
+.home-refresh .hero-disclosure summary { width: fit-content; max-width: 100%; cursor: pointer; color: var(--cream); text-decoration: underline; text-underline-offset: 3px; font-size: .8125rem; line-height: 1.5; }
+.home-refresh .hero-disclosure[open] summary { margin-bottom: 12px; }
+.home-refresh .hero-disclosure .hero-risk { margin-top: 0; }
+.home-refresh .hero-disclosure .terms { margin-top: 12px; padding-top: 12px; }
+.home-refresh .hero-cancel { margin-top: 10px; font-size: .8125rem; line-height: 1.5; }
+@media (max-width: 560px) {
+  .home-refresh .hero .wrap { padding-top: 24px; }
+  .home-refresh .hero .kicker { margin-bottom: 10px; }
+  .home-refresh .hero h1 { font-size: clamp(2.5rem, 11vw, 3rem); }
+  .home-refresh .hero .hero-h2 { margin-top: 12px; }
+  .home-refresh .hero-sub { line-height: 1.45; }
+  .home-refresh .hero .hero-what { margin-top: 10px; }
+  .home-refresh .hero-offer { margin-top: 14px; }
+  .home-refresh .hero-ctas { margin-top: 14px; }
+}
+
 /* Phone */
 .stage { margin: 0; justify-self: center; width: 100%; max-width: 380px; position: relative; }
 .phone { width: 100%; max-width: 300px; margin: 0 auto; background: #1d1c1b; border-radius: 44px; padding: 10px; box-shadow: 0 0 0 1.5px #4a4946, 0 40px 80px -30px rgba(0,0,0,.8); }
@@ -613,7 +634,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .dc .pill.saved { animation: saved 4s ease-in-out infinite; }
 @keyframes saved { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,195,142,0); } 50% { box-shadow: 0 0 0 5px rgba(34,195,142,.22); } }
 </style>
-<link rel="stylesheet" href="/assets/rotely.css?v=5">
+<link rel="stylesheet" href="/assets/rotely.css?v=6">
 <style>
 /* Hero price pills: each reads as one line of text that wraps. */
 .v2 .terms li,.v2 .terms li.t-hw,.v2 .terms li.t-mm{display:inline-block}
@@ -1007,12 +1028,17 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         <h2 class="hero-sub hero-h2">Liquor inventory software for independent bars</h2>
         <p class="hero-sub">Inventory, invoices and ordering, without the busywork.</p>
         <p class="hero-sub hero-what">After one starting count, Rotely estimates shelf stock from your distributor invoices and register sales. Your team checks the bottles and corrects what's different. We set it up for you.</p>
-        <p class="hero-risk"><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>First month free.</strong> Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</span></p>
-        <ul class="terms" aria-label="Price and terms"><li>First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax.</li><li class="tbr" role="presentation"></li><li>No setup fee</li><li class="t-mm">Pay monthly or yearly</li><li class="t-hw">No hardware</li></ul>
+        <p class="hero-offer"><strong>First 30 days free</strong>, then $99 a month, plus tax. Holiday deal.</p>
         <div class="hero-ctas">
           <a class="btn btn-go" href="#setup">Start my free month <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
           <a class="btn btn-line" href="https://app.rotely.co/demo">See the sample bar <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
         </div>
+        <details class="hero-disclosure">
+          <summary>Full pricing and billing details</summary>
+        <p class="hero-risk"><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>First month free.</strong> Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</span></p>
+        <ul class="terms" aria-label="Price and terms"><li>First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax.</li><li class="tbr" role="presentation"></li><li>No setup fee</li><li class="t-mm">Pay monthly or yearly</li><li class="t-hw">No hardware</li></ul>
+          <p class="hero-cancel">To cancel, email <a href="mailto:support@rotely.co">support@rotely.co</a> before billing starts.</p>
+        </details>
       </div>
       <figure class="stage">
         <div class="phone" aria-hidden="true">
@@ -1578,4 +1604,14 @@ Reply 1, 2 or ALL to add to your order, NO to skip.</pre>
 })();
 </script>
 <script id="rc-wait-js">(function(){var a=document.getElementById("rc-ask");if(!a)return;function f(){if(window.scrollY>window.innerHeight*0.6){a.classList.remove("rc-wait");window.removeEventListener("scroll",f)}}window.addEventListener("scroll",f,{passive:true});f();})();</script>
+<script>
+  {
+    const menu = document.querySelector('.site-head details.mnav');
+    if (menu) {
+      menu.addEventListener('click', function (event) {
+        if (event.target.closest('.mnav-p a')) menu.open = false;
+      });
+    }
+  }
+</script>
 </body></html>

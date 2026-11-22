@@ -13,3 +13,7 @@
 /index-1 / 301!
 /start   /start.html   200
 /build   /build.html   200
+/pricing /#price 301
+/how-it-works /#how 301
+/security /privacy#8-security 301
+/demo https://app.rotely.co/demo 301
