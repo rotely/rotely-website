@@ -453,3 +453,175 @@ body{text-rendering:optimizeLegibility}
 .v2 .fbase a{display:inline-block;padding:6px 0}
 /* Header fits a 320px phone without sideways scroll. */
 @media (max-width:339px){.v2 .site-head .wrap{gap:8px}.v2 .nav .btn{padding:0 10px}.v2 .mnav{margin-left:2px}}
+/* Shared reading and touch layout. Keep the printed count sheet on paper. */
+@media screen {
+  .v2 .nav .btn,
+  .v2 .tabs .tab,
+  .v2 .sheet input,
+  .v2 .sheet .rm,
+  .v2 .sheetwrap .addrow,
+  .v2 .fcol a,
+  .v2 .fbase a,
+  .v2 .toc a,
+  .v2 .phero .crumb a,
+  .v2 .hero-disclosure > summary {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .v2 .fbrand > a,
+  .v2 .fbase a,
+  .v2 .toc a {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+  }
+  .v2 .fbrand > a { min-height: 44px; }
+  .v2 .fsoc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .v2 .fsoc a,
+  .v2 #rc-ask .rc-x {
+    width: 44px;
+    height: 44px;
+  }
+  .v2 .fsoc a { flex: 0 0 44px; }
+  .v2 .fcol h3 { margin-bottom: 8px; }
+  .v2 .fbase { align-items: center; }
+  .v2 .toc a { display: flex; }
+  .v2 .doc :is(h2, h3)[id] { scroll-margin-top: 5.5rem; }
+
+  /* Inline links keep a normal line of type and get their own hit area. */
+  .v2 :is(.doc, .guide, .story, .inc, .fine, .signup-offer, .legal,
+          .ask-num, .st-cancel, .bx-alt, .upd, .hero-cancel, .faq) a:not([class]) {
+    display: inline-block;
+    align-content: center;
+    min-height: 44px;
+    min-width: 44px;
+    max-width: 100%;
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+  }
+  .v2 .hero-disclosure > summary {
+    align-content: center;
+    padding-block: 8px;
+  }
+  .v2 .pgrid > *,
+  .v2 .calc > *,
+  .v2 .fgrid > * { min-width: 0; }
+  .v2 .guide,
+  .v2 .doc { overflow-wrap: break-word; }
+  .v2 .phero h1, .v2 .doc h2, .v2 .guide h2 { text-wrap: balance; }
+  .v2 .p404 .wrap > * { margin-inline: auto; }
+  .v2 .p404 .pctas { max-width: 100%; }
+}
+@media screen and (min-width: 900px) {
+  .v2 .toc {
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+  }
+  .v2 .phero:not(:has(.pvis)):not(.p404) .wrap > :is(h1, p) { max-width: 46rem; }
+}
+@media screen and (max-width: 600px) {
+  .v2 .phero:has(.crumb) { padding-top: 14px; }
+  .v2 .phero .crumb { margin-bottom: 6px; }
+  .v2 .phero .kicker { margin-bottom: 8px; }
+  .v2 .pbody .calc .card, .v2 .pbody .tcard, .v2 .pbody .story { padding: 20px; }
+  .v2 .pbody .tcard .ic { margin-bottom: 12px; }
+  .v2 .pbody .tcard .go { margin-top: 12px; }
+  .v2 .guide h2 { margin-top: 36px; padding-top: 20px; }
+  .v2 .guide > h2:first-child { margin-top: 0; padding-top: 0; }
+  .v2 .guide :is(th, td) { padding: 10px 8px; }
+  .v2 .site-foot { padding-top: 40px; }
+  .v2 .fgrid { gap: 24px 16px; }
+  .v2 .fbase { margin-top: 28px; padding-top: 12px; }
+  .v2 .fsoc { gap: 4px; }
+}
+@media screen and (max-width: 420px) {
+  .v2.home-refresh .site-head .wrap { gap: 8px; }
+  .v2.home-refresh .site-head .nav .btn { padding-inline: 12px; }
+  .v2.home-refresh .site-head .brand .wm { width: 92px; height: auto; }
+}
+/* The sheet stays a six-column table in print and on larger displays. */
+@media screen and (max-width: 700px) {
+  .v2 .sheetwrap { padding: 14px; }
+  .v2 .sheet-tools { gap: 8px; margin-top: 0; }
+  .v2 .sheet-tools .btn { flex: 1 1 14rem; }
+  .v2 .sheet-head { align-items: start; flex-wrap: wrap; gap: 6px; }
+  .v2 .sheet {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    text-align: left;
+  }
+  .v2 .sheet colgroup { display: none; }
+  .v2 .sheet thead {
+    position: absolute;
+    clip-path: inset(50%);
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+  }
+  .v2 .sheet tbody { display: grid; gap: 10px; }
+  .v2 .sheet tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) 44px;
+    align-items: end;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid var(--v-line);
+    border-radius: 12px;
+  }
+  .v2 .sheet td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+  .v2 .sheet tbody td:first-child { grid-column: 1 / 3; }
+  .v2 .sheet td.noprint { grid-area: 1 / 3; align-self: center; }
+  .v2 .sheet tr:not(.sec) td:nth-child(3),
+  .v2 .sheet tr:not(.sec) td:nth-child(5) { grid-column: 2 / 4; }
+  .v2 .sheet input { background: var(--v-card); border-color: var(--v-line); }
+  .v2 .sheet tr.sec { margin-top: 4px; }
+  .v2 .sheet tr.sec td { background: transparent; }
+  .v2 .sheet tr.sec input { font-weight: 700; }
+  .v2 .sheet tr:not(.sec) td:not(.noprint)::before {
+    display: block;
+    margin: 0 0 3px;
+    color: var(--v-muted);
+    font-weight: 600;
+    font-size: .8125rem;
+    line-height: 1.3;
+  }
+  .v2 .sheet tr:not(.sec) td:nth-child(1)::before { content: "Bottle" / ""; }
+  .v2 .sheet tr:not(.sec) td:nth-child(2)::before { content: "Size" / ""; }
+  .v2 .sheet tr:not(.sec) td:nth-child(3)::before { content: "Par" / ""; }
+  .v2 .sheet tr:not(.sec) td:nth-child(4)::before { content: "On the shelf" / ""; }
+  .v2 .sheet tr:not(.sec) td:nth-child(5)::before { content: "To order" / ""; }
+  .v2 .sheet tr:not(.sec) td.blank { min-height: 36px; border-bottom: 1px solid var(--v-line); }
+}
+@media screen {
+  .v2 .phero .rnn-mast span { color: var(--v-cream); }
+  .v2 #rc-ask .rc-chip,
+  .v2 #rc-ask .rc-foot a {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .v2 #rc-ask .rc-foot a { display: inline-flex; align-items: center; }
+  .v2 #rc-ask .rc-log { min-height: 0; overflow-y: auto; }
+}
+@media screen and (min-width: 1100px) {
+  .v2 .phero:has(.pvis) .wrap > h1 {
+    max-width: min(66%, calc(100% - 380px));
+    font-size: clamp(2.6rem, 1.5rem + 2.4vw, 3.75rem);
+    line-height: 1.06;
+  }
+}
+@media screen and (max-width: 600px) {
+  .v2 .st-hero > .wrap { padding-top: 14px; gap: 12px; }
+  .v2 .st-hero h1#h1 { max-width: 18ch; margin-bottom: 6px; }
+  .v2 .st-hero .st-sub { margin-bottom: 8px; }
+  .v2 .st-hero .st-checks { gap: 4px 12px; }
+}
