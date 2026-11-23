@@ -688,23 +688,36 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
   .st-sub { font-size: 18px; }
   .st-checks li { font-size: 16px; }
 }
+
+.st-hero .st-category { margin: 0 0 8px; color: var(--on-ink-2); font-size: 1rem; font-weight: 600; line-height: 1.4; }
+.st-intro-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 16px 0 10px; }
+.st-hero .st-intro-actions .btn { flex: 1 1 auto; min-height: 48px; width: auto; padding: 10px 12px; justify-content: center; }
+.st-hero .st-intro-actions #st-look { margin: 0; padding: 10px 12px; }
+.st-hero .st-intro .st-checks { margin: 0; }
+@media (min-width: 720px) { .st-hero .st-intro-actions .btn { flex: 0 1 auto; padding-inline: 18px; } }
+.st-hero #setup-form .signup-offer { text-align: left; }
+.st-hero .signup-offer > * { margin: 0; }
+.st-hero .signup-offer > * + * { margin-top: .65rem; }
+.st-hero .card .st-plan-terms {
+  display: block; list-style: disc; margin: .65rem 0 0; padding: 0 0 0 1.1rem; border: 0;
+}
+.st-hero .card .st-plan-terms li { display: list-item; }
+.st-hero .card .st-plan-terms li + li { margin-top: .25rem; }
 </style>
 <main id="main">
   <section class="hero ink st-hero" id="top" aria-labelledby="h1">
     <div class="wrap">
-      <div>
+      <div class="st-intro">
+        <p class="st-category">Liquor inventory software for independent bars</p>
         <h1 id="h1"><span id="st-h">Stop counting the bar from zero</span><span class="dot">.</span></h1>
-        <p class="st-sub" id="st-sub">Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different.</p>
-        <ul class="st-checks">
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>We set it up for you.</span></li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span><strong>First month free.</strong></span></li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>Try Rotely free for 30 days. Add your card at signup. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</span></li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax.</span></li>
-          <li><svg aria-hidden="true"><use href="#i-check"/></svg><span>At our first bar, Rotely can save over $16,800 a year in money and time, by our estimate.</span></li>
-        </ul>
+        <p class="st-sub" id="st-sub">After your first count, Rotely estimates shelf stock from your invoices and register sales so you can check what's different.</p>
+        <div class="st-intro-actions">
+          <a class="btn btn-go" href="#setup">Start my free month</a>
+          <a class="btn btn-line" id="st-look" href="https://app.rotely.co/demo" data-qv="1">See the sample bar</a>
+        </div>
+        <ul class="st-checks"><li><svg aria-hidden="true"><use href="#i-check"/></svg><span>We set it up for you.</span></li></ul>
       </div>
       <div class="card" id="form-card">
-        <a class="st-look" id="st-look" href="https://app.rotely.co/demo" data-qv="1">Rather look first? Open the sample bar</a>
         <form id="setup-form" name="setup" method="POST" action="https://app.rotely.co/signup" novalidate tabindex="-1" aria-label="Bar signup" data-clarity-mask="true">
 <input type="hidden" name="src" value="">
 <input type="hidden" name="utm_medium" value="">
@@ -726,15 +739,22 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
           <details class="st-ref"><summary>Someone sent you?</summary>
             <div class="field"><label for="f-ref">Who told you about Rotely? <span class="opt">Optional. If someone sent you, Rotely pays them for it.</span></label><input id="f-ref" name="referred_by" type="text" maxlength="80" placeholder="Example: Mike at Joe's Bar" autocomplete="off"></div>
           </details>
-          <p class="signup-offer" id="signup-offer">You won't be charged today. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts. First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. To cancel, email <a href="mailto:support@rotely.co">support@rotely.co</a> before billing starts. If we receive your cancellation email before billing starts and your first charge still goes through, we’ll refund that charge in full.</p>
+          <div class="signup-offer" id="signup-offer">
+            <p>Add your card at signup. You won't be charged today. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</p>
+            <ul class="st-plan-terms">
+              <li>First 30 days free, then $99 a month, plus tax. Holiday deal.</li>
+              <li>First 30 days free, then $999 billed once per year, plus tax. Holiday deal.</li>
+              <li>Regular price: $149 a month, plus tax.</li>
+            </ul>
+            <p>Your first charge covers one month or one year, depending on the plan you choose. Your first inventory count does not start billing.</p>
+            <p>To cancel, email <a href="mailto:support@rotely.co">support@rotely.co</a> before billing starts. If we receive your cancellation email before billing starts and your first charge still goes through, we’ll refund that charge in full.</p>
+          </div>
           <button class="btn btn-go" type="submit" id="setup-go" aria-describedby="signup-offer">Continue to secure checkout <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
           <p class="legal">See our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
-          <p class="fine">First 30 days free, then $99 a month, plus tax. Holiday deal. First 30 days free, then $999 billed once per year, plus tax. Holiday deal. Regular price: $149 a month, plus tax. Your first charge covers one month or one year, depending on the plan you choose.</p>
           <label class="consent" for="f-sms">
             <input id="f-sms" name="sms_consent" type="checkbox" value="yes">
             <span><b>Optional.</b> Text me at this mobile number from Rotely about my account, including counts, weekly summaries and order drafts. Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase.</span>
           </label>
-        <p class="rec-note" style="font-size:.8125rem;opacity:.75;margin:12px 0 0">This page records what you type to help us improve it.</p>
         </form>
         <div class="thanks" id="thanks" tabindex="-1" role="status">
           <div class="ok"><svg aria-hidden="true"><use href="#i-check"/></svg></div>
@@ -767,7 +787,6 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         </ol>
       </div>
       <p class="st-proof">Rotely can save one bar over $16,800 a year by our estimate: about $9,500 in money and 490 hours of work. The money alone is over 5 times the regular price.</p>
-      <p class="st-cancel">Pay monthly or yearly. To cancel, email <a href="mailto:support@rotely.co">support@rotely.co</a> before billing starts. Your first inventory count does not start billing.</p>
       <a class="btn btn-go st-again" href="#setup">Start my free month <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
     </div>
   </section>
@@ -853,7 +872,6 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
   var c = (p.get('utm_content') || '').toLowerCase();
   if (c.indexOf('invoice') === 0) {
     document.getElementById('st-h').textContent = 'Send invoices. Check your starting stock';
-    document.getElementById('st-sub').textContent = "Check your starting stock on the first count. After that, Rotely uses your invoices and sales to work out what should be on the shelf. You check and fix what's different.";
   }
 
 })();
