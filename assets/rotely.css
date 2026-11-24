@@ -732,8 +732,8 @@ body{text-rendering:optimizeLegibility}
     max-height: calc(100dvh - 40px);
   }
 }
-/* Keep narrow-screen numeric tables inside the page gutters. */
-@media (max-width: 360px) {
+/* Keep phone tables readable inside the page gutters. */
+@media (max-width: 719px) {
   .v2 .pbody table:not(.sheet) :is(th, td) {
     padding-inline: 8px;
   }
@@ -810,5 +810,37 @@ body{text-rendering:optimizeLegibility}
     grid-column: auto;
     padding-top: 0;
     border-top: 0;
+  }
+}
+
+/* Keep inline secondary-page links on the surrounding text baseline. */
+@media screen {
+  .v2 .phero p.upd:has(> a:not([class])) {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+  }
+  .v2 .phero p.upd:has(> a:not([class]))::before {
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .v2 .pbody :is(.doc, .guide, .story, .inc) p > a:not([class]),
+  .v2 .phero p.upd > a:not([class]),
+  .v2 .bx-card p.bx-alt > a:not([class]) {
+    display: inline;
+    min-width: 0;
+    min-height: 0;
+    vertical-align: baseline;
+  }
+}
+
+/* Keep calculator explanations separate from their result cards. */
+@media screen {
+  .v2 .pbody .calc + .pgrid { margin-top: 32px; }
+}
+@media screen and (max-width: 719px) {
+  .v2 .pbody .guide table:has(thead th:nth-child(3)):not(:has(thead th:nth-child(4))) {
+    table-layout: auto;
   }
 }
