@@ -634,7 +634,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .dc .pill.saved { animation: saved 4s ease-in-out infinite; }
 @keyframes saved { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,195,142,0); } 50% { box-shadow: 0 0 0 5px rgba(34,195,142,.22); } }
 </style>
-<link rel="stylesheet" href="/assets/rotely.css?v=8">
+<link rel="stylesheet" href="/assets/rotely.css?v=9">
 <style>
 /* Hero price pills: each reads as one line of text that wraps. */
 .v2 .terms li,.v2 .terms li.t-hw,.v2 .terms li.t-mm{display:inline-block}
@@ -1204,6 +1204,43 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .v2 #signup-plans .pricing-comparison { margin-top: 16px; margin-bottom: 0; }
 
 </style>
+<style id="home-r4">
+/* Keyed homepage savings and comparison revision. */
+#main.design-pass .mc-proof h2 { font-size: .875rem; font-weight: 650; line-height: 1.4; letter-spacing: .01em; }
+#main.design-pass .mc-proof .mc-amount { margin-top: 16px; font-size: clamp(2.75rem, 11vw, 4.25rem); line-height: 1.1; letter-spacing: -.055em; }
+#main.design-pass .mc-proof .mc-amount .mc-year { display: block; margin-top: 6px; font-size: 1.125rem; line-height: 1.35; letter-spacing: -.015em; }
+#main.design-pass .mc-proof-label { margin-top: 20px; font-weight: 500; line-height: 1.5; }
+#main.design-pass .mc-proof-note { margin-top: 16px; font-size: .8125rem; line-height: 1.6; }
+#main.design-pass .mc-preview figcaption { text-align: center; }
+#main.design-pass .mc-steps li { grid-template-columns: 20px minmax(0, 1fr); column-gap: 12px; }
+#main.design-pass .mc-steps li p { max-width: none; }
+#main.design-pass #signup-offer .pricing-checks { margin-top: 0; padding-top: 18px; border-top: 1px solid var(--line); }
+#main.design-pass #compare th, #main.design-pass #compare td { overflow-wrap: normal; }
+#main.design-pass #compare thead th { font-weight: 650; text-transform: none; letter-spacing: normal; }
+#main.design-pass #compare thead th:nth-child(2) { color: var(--muted); }
+#main.design-pass #compare thead th:nth-child(3) { color: var(--good-text); }
+@media (max-width:1099px) {
+  #main.design-pass #compare tbody { display: grid; gap: 14px; }
+  #main.design-pass #compare tbody tr,
+  #main.design-pass #compare tbody tr:first-child { display: block; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  #main.design-pass #compare tbody th { padding: 0 0 16px; font-size: 1.0625rem; }
+  #main.design-pass #compare tbody td { display: block; padding: 0; line-height: 1.5; }
+  #main.design-pass #compare tbody td + td { margin-top: 16px; }
+  #main.design-pass #compare tbody td::before { display: block; content: attr(data-label); margin-bottom: 4px; font-size: .75rem; line-height: 1.4; font-weight: 600; }
+  #main.design-pass #compare tbody td[data-label="Before"] { color: var(--muted); }
+  #main.design-pass #compare tbody td[data-label="Before"]::before { color: var(--muted); }
+  #main.design-pass #compare tbody td[data-label="With Rotely"] { color: var(--text); font-weight: 600; }
+  #main.design-pass #compare tbody td[data-label="With Rotely"]::before { color: var(--good-text); font-weight: 700; }
+}
+@media (min-width:1100px) {
+  #main.design-pass #compare table { table-layout: fixed; }
+  #main.design-pass #compare th:first-child { width: 22%; }
+  #main.design-pass #compare td { width: 39%; vertical-align: top; }
+  #main.design-pass #compare td[data-label="Before"] { color: var(--muted); }
+  #main.design-pass #compare td[data-label="With Rotely"] { color: var(--text); font-weight: 600; }
+}
+
+</style>
 </head><body class="v2 home-refresh mobile-cut">
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -1299,20 +1336,19 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
   <section class="mc-evidence" aria-label="Savings and comparison">
     <div class="wrap mc-proof-grid">
       <article class="mc-proof" id="savings" aria-labelledby="sv-h">
-      <h2 id="sv-h"><span id="pf-h">Savings Rotely found</span></h2>
-      <p class="mc-proof-place">Warehouse 150 &middot; September 2026</p>
-      <p class="mc-amount">$230</p>
-      <p class="mc-proof-label">Paid above the cheaper store.</p>
-      <p class="mc-proof-note">From the bar's invoices: Jameson 1.75L at $55.20 vs $53.99 and McCormick 1L at $6.40 vs $5.99.</p>
-    </article>
+        <h2 id="sv-h"><span id="pf-h">What one bar can save</span></h2>
+        <p class="mc-amount">$16,800+ <span class="mc-year">a year</span></p>
+        <p class="mc-proof-label">About $9,500 in money and 490 hours of work, by our estimate.</p>
+        <p class="mc-proof-note">The money alone is over 5 times the regular price.</p>
+      </article>
       <div class="mc-compare" id="compare">
         <h2 id="cp-h">The difference, side by side.</h2>
         <table aria-labelledby="cp-h">
-          <thead><tr><th scope="col">Task</th><th scope="col">Rotely</th><th scope="col">Clipboard + spreadsheet</th></tr></thead>
+          <thead><tr><th scope="col">Task</th><th scope="col">Before</th><th scope="col">With Rotely</th></tr></thead>
           <tbody>
-            <tr><th scope="row">Expected stock from invoices and sales</th><td data-label="Rotely">After the first count</td><td data-label="Clipboard + spreadsheet">No</td></tr>
-            <tr><th scope="row">Invoices by photo or email, included</th><td data-label="Rotely">Yes</td><td data-label="Clipboard + spreadsheet">Typed by hand</td></tr>
-            <tr><th scope="row">Orders drafted, approved by text</th><td data-label="Rotely">Yes</td><td data-label="Clipboard + spreadsheet">No</td></tr>
+            <tr><th scope="row">Counting</th><td data-label="Before">Count every bottle from zero.</td><td data-label="With Rotely">Start from expected stock and fix what's different.</td></tr>
+            <tr><th scope="row">Invoices</th><td data-label="Before">Type every price in by hand.</td><td data-label="With Rotely">Snap a photo or forward the email.</td></tr>
+            <tr><th scope="row">Orders</th><td data-label="Before">Write the order and call it in.</td><td data-label="With Rotely">Approve a drafted order by text.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1326,12 +1362,12 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
           <div class="pricing-plan-grid">
             <article class="pricing-plan" aria-labelledby="monthly-plan">
               <div class="pricing-plan-top"><h4 class="pricing-plan-name" id="monthly-plan">Monthly</h4></div>
-              <p class="pricing-offer-line"><span class="pricing-free">First 30 days free, then </span><span class="pricing-rate">$99</span> <span class="pricing-frequency">a month, plus tax.</span> <span class="pricing-tag">Holiday deal.</span></p>
+              <p class="pricing-offer-line"><span class="pricing-free">First 30 days free, then </span><span class="pricing-rate">$99</span> <span class="pricing-frequency">a month, plus tax.</span> <span class="pricing-tag">Holiday deal</span></p>
               <p class="pricing-regular">Regular price: <s>$149 a month</s>, plus tax.</p>
             </article>
             <article class="pricing-plan" aria-labelledby="yearly-plan">
               <div class="pricing-plan-top"><h4 class="pricing-plan-name" id="yearly-plan">Yearly</h4></div>
-              <p class="pricing-offer-line"><span class="pricing-free">First 30 days free, then </span><span class="pricing-rate">$999</span> <span class="pricing-frequency">billed once per year, plus tax.</span> <span class="pricing-tag">Holiday deal.</span></p>
+              <p class="pricing-offer-line"><span class="pricing-free">First 30 days free, then </span><span class="pricing-rate">$999</span> <span class="pricing-frequency">billed once per year, plus tax.</span> <span class="pricing-tag">Holiday deal</span></p>
               <p class="pricing-regular">The annual deal is 44% off the regular <s>$1,788 a year</s>, plus tax.</p>
             </article>
           </div>
