@@ -630,6 +630,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
     <nav class="nav" aria-label="Main"><details class="mnav"><summary aria-label="Open menu" aria-controls="site-menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path class="mnav-lines" d="M4 7h16M4 12h16M4 17h16"/><path class="mnav-close" d="M6 6l12 12M6 18 18 6"/></svg></summary><div class="mnav-p" id="site-menu"><a href="/#how">How it works</a><a href="/#compare">Compare</a><a href="/#price">Price</a><a href="/#faq">FAQ</a><a href="/tools">Free tools</a><a href="https://app.rotely.co/demo">Sample bar</a><a href="https://app.rotely.co/app/login">Sign in</a><p class="start-disclosure start-disclosure-menu"><strong>First 30 days free</strong><br>Add your card at signup. You won't be charged today. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</p><a class="btn btn-go mnav-cta" href="#setup">Start free for 30 days</a></div></details><a class="si si-demo" href="https://app.rotely.co/demo" data-qv="1">Sample bar</a><a class="btn btn-go" href="#setup">Start free for 30 days</a></nav>
   </div>
 </header>
+<div class="start-disclosure start-disclosure-mobile"><div class="wrap"><strong>First 30 days free</strong><br>Add your card at signup. You won't be charged today. Your selected plan starts billing automatically on day 30 unless you cancel before billing starts.</div></div>
 <style id="start-design">
 /* Signup uses the same typography, spacing and pricing components as the homepage. */
 .start-page .st-hero::before, .start-page .st-hero::after { content: none; }
@@ -794,8 +795,13 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
 .start-page .start-disclosure-menu { margin:8px 0 0; padding:10px 12px; border-radius:8px; }
 .start-page .st-close { display:grid; gap:12px; }
 .start-page .st-close .start-disclosure { margin:0; padding:0; background:transparent; }
-@media screen and (max-width:719px) {
-  .start-page > .start-disclosure { display:none; }
+.start-page > .start-disclosure-mobile,
+.start-page .st-intro-actions .st-mobile-signup { display:none; }
+@media (width < 768px) {
+  .start-page > .start-disclosure:not(.start-disclosure-mobile) { display:none; }
+  .start-page > .start-disclosure-mobile { display:block; }
+  .start-page .st-intro-actions { max-width:none; margin-top:14px; }
+  .start-page .st-intro-actions .st-mobile-signup { display:flex; width:100%; }
 }
 @media (min-width:1000px) {
   .start-page .st-hero > .wrap { grid-template-areas:"intro screen" "form form"; grid-template-rows:auto auto; row-gap:32px; }
@@ -812,6 +818,7 @@ tbody tr + tr .rc { border-top-color: rgba(242,239,233,.14); }
         <h1 id="h1"><span id="st-h">Stop counting the bar from zero.</span></h1>
         <p class="st-sub" id="st-sub">Check starting stock on your first count. After that, Rotely uses invoices and sales to work out expected stock in shelf order. Staff still check the bottles and fix the differences.</p>
         <div class="st-intro-actions">
+          <a class="btn btn-go st-mobile-signup" href="#setup">Start free for 30 days</a>
           <a class="btn btn-line" id="st-look" href="https://app.rotely.co/demo" data-qv="1">See the sample bar</a>
         </div>
       </div>
