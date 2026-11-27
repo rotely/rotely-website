@@ -132,50 +132,50 @@ td:nth-child(n+2){white-space:nowrap}
     <form class="card" id="f" novalidate onsubmit="return false">
       <div class="field">
         <label for="use">Used in a week</label>
-        <div class="inrow"><input id="use" inputmode="decimal" autocomplete="off" placeholder="Example: 12"><span class="unit" id="use-u">bottles</span></div>
-        <span class="hint">Bottles, kegs or cans. Your last few weeks of sales, or what you ordered.</span>
+        <div class="inrow"><input id="use" aria-describedby="use-hint use-e" inputmode="decimal" autocomplete="off" placeholder="Example: 12"><span class="unit" id="use-u">bottles</span></div>
+        <span class="hint" id="use-hint">Bottles, kegs or cans. Your last few weeks of sales, or what you ordered.</span>
         <span class="err" id="use-e"></span>
       </div>
       <div class="field">
         <label for="gap">Days between deliveries</label>
-        <div class="inrow"><input id="gap" inputmode="decimal" autocomplete="off" placeholder="Example: 7"><span class="unit">days</span></div>
-        <span class="hint">Once a week is 7. Twice a week is about 3.5.</span>
+        <div class="inrow"><input id="gap" aria-describedby="gap-hint gap-e" inputmode="decimal" autocomplete="off" placeholder="Example: 7"><span class="unit">days</span></div>
+        <span class="hint" id="gap-hint">Once a week is 7. Twice a week is about 3.5.</span>
         <span class="err" id="gap-e"></span>
       </div>
       <div class="field">
         <label for="lead">Days from order to delivery</label>
-        <div class="inrow"><input id="lead" inputmode="decimal" autocomplete="off" placeholder="Example: 2"><span class="unit">days</span></div>
-        <span class="hint">Order Monday, it shows up Wednesday: that's 2.</span>
+        <div class="inrow"><input id="lead" aria-describedby="lead-hint lead-e" inputmode="decimal" autocomplete="off" placeholder="Example: 2"><span class="unit">days</span></div>
+        <span class="hint" id="lead-hint">Order Monday, it shows up Wednesday: that's 2.</span>
         <span class="err" id="lead-e"></span>
       </div>
       <div class="field">
         <label for="pad">Extra for a busy week</label>
-        <div class="inrow"><input id="pad" inputmode="decimal" autocomplete="off" placeholder="Example: 50"><span class="unit">%</span></div>
-        <span class="hint">50 adds 50% extra for the days between deliveries plus the wait for your order. Blank means none.</span>
+        <div class="inrow"><input id="pad" aria-describedby="pad-hint pad-e" inputmode="decimal" autocomplete="off" placeholder="Example: 50"><span class="unit">%</span></div>
+        <span class="hint" id="pad-hint">50 adds 50% extra for the days between deliveries plus the wait for your order. Blank means none.</span>
         <span class="err" id="pad-e"></span>
       </div>
       <div class="field">
         <label for="have">On the shelf now</label>
-        <div class="inrow"><input id="have" inputmode="decimal" autocomplete="off" placeholder="Example: 9"><span class="unit">bottles</span></div>
-        <span class="hint">Leave it blank to see the par only.</span>
+        <div class="inrow"><input id="have" aria-describedby="have-hint have-e" inputmode="decimal" autocomplete="off" placeholder="Example: 9"><span class="unit">bottles</span></div>
+        <span class="hint" id="have-hint">Leave it blank to see the par only.</span>
         <span class="err" id="have-e"></span>
       </div>
       <div class="field">
         <label for="case">Comes in cases of</label>
-        <div class="inrow"><input id="case" inputmode="decimal" autocomplete="off" placeholder="Example: 12"><span class="unit">bottles</span></div>
-        <span class="hint">Leave it blank if you can order single bottles.</span>
+        <div class="inrow"><input id="case" aria-describedby="case-hint case-e" inputmode="decimal" autocomplete="off" placeholder="Example: 12"><span class="unit">bottles</span></div>
+        <span class="hint" id="case-hint">Leave it blank if you can order single bottles.</span>
         <span class="err" id="case-e"></span>
       </div>
     </form>
 
     <div class="card out" aria-live="polite">
       <p class="lead">Your par</p>
-      <p class="big" id="o-big">0</p>
-      <p class="say" id="o-say">Put in how many you use in a week to see it.</p>
+      <p class="big" id="o-big">—</p>
+      <p class="say" id="o-say">Enter weekly use, days between deliveries and days from order to delivery (0 for same-day delivery).</p>
       <dl class="rows">
-        <div><dt>Used in a day</dt><dd id="o-day">0</dd></div>
-        <div><dt>Has to last</dt><dd id="o-last">0 days</dd></div>
-        <div><dt>Order today</dt><dd id="o-order">Add what's on the shelf</dd></div>
+        <div><dt>Used in a day</dt><dd id="o-day">—</dd></div>
+        <div><dt>Has to last</dt><dd id="o-last">—</dd></div>
+        <div><dt>Order today</dt><dd id="o-order">—</dd></div>
       </dl>
     </div>
   </div>
@@ -254,10 +254,14 @@ td:nth-child(n+2){white-space:nowrap}
       $("o-say").textContent="Fix the highlighted entries to see your result.";
       return;
     }
-    var gd=(g!==null&&!isNaN(g)&&g>0&&g<=90)?g:7, ld=(l!==null&&!isNaN(l)&&l>=0&&l<=30)?l:0, pd=(p!==null&&!isNaN(p)&&p>=0&&p<=300)?p:0;
+    if(u===null||g===null||l===null){
+      ["o-last","o-day","o-big","o-order"].forEach(function(id){$(id).textContent="—";});
+      $("o-say").textContent="Enter weekly use, days between deliveries and days from order to delivery (0 for same-day delivery).";
+      return;
+    }
+    var gd=g, ld=l, pd=(p!==null&&!isNaN(p)&&p>=0&&p<=300)?p:0;
     var last=gd+ld;
     $("o-last").textContent=fmt(last)+" "+plural(last,"day","days");
-    if(u===null||isNaN(u)||u<=0){$("o-big").textContent="0";$("o-day").textContent="0";$("o-say").textContent="Put in how many you use in a week to see it.";$("o-order").textContent="Add what's on the shelf";return}
     var day=u/7, par=Math.ceil(day*last*(1+pd/100)-1e-9);
     if(par<1)par=1;
     $("o-day").textContent=fmt(day);
@@ -276,7 +280,7 @@ td:nth-child(n+2){white-space:nowrap}
 <script>window.ROTELY_ADS = {google: "AW-18549067972", meta: "1836378017394682", ms: ""};</script>
 <script src="/ads.js" defer></script>
 <script src="/traffic.js" defer></script>
-<script id="ex-fill">(function(){var ins=document.querySelectorAll(".calc input[placeholder^='Example: ']:not(#loss)");if(!ins.length)return;var any=false;ins.forEach(function(el){if(!el.value){el.value=el.placeholder.replace("Example: ","");any=true}});if(!any)return;ins.forEach(function(el){el.dispatchEvent(new Event("input",{bubbles:true}))});var c=document.querySelector(".calc .card");if(c&&!document.getElementById("exnote")){var n=document.createElement("p");n.id="exnote";n.className="exnote";n.textContent="Filled in with an example. Change any number to see yours.";c.insertBefore(n,c.firstChild)}})();</script>
+<script id="ex-fill">(function(){var ins=document.querySelectorAll(".calc input[placeholder^='Example: ']:not(#loss)");if(!ins.length||Array.prototype.some.call(ins,function(el){return el.value!==""}))return;ins.forEach(function(el){el.value=el.placeholder.replace("Example: ","")});ins.forEach(function(el){el.dispatchEvent(new Event("input",{bubbles:true}))});var c=document.querySelector(".calc .card");if(c&&!document.getElementById("exnote")){var n=document.createElement("p");n.id="exnote";n.className="exnote";n.textContent="Filled in with an example. Change any number to see yours.";c.insertBefore(n,c.firstChild)}})();</script>
 <script id="site-menu-behavior">
 (() => {
   const menu = document.querySelector('.site-head details.mnav');
